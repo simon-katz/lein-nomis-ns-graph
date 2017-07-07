@@ -1,12 +1,13 @@
 (ns leiningen.nomis-ns-graph
-  (:require [clojure.java.io :as io]
+  (:require [clojure.edn :as edn]
+            [clojure.java.io :as io]
             [clojure.set :as set]
-            [clojure.edn :as edn]
+            [clojure.string :as str]
+            [clojure.tools.namespace.dependency :as ns-dep]
             [clojure.tools.namespace.file :as ns-file]
-            [clojure.tools.namespace.track :as ns-track]
             [clojure.tools.namespace.find :as ns-find]
             [clojure.tools.namespace.parse :as parse]
-            [clojure.tools.namespace.dependency :as ns-dep]
+            [clojure.tools.namespace.track :as ns-track]
             [rhizome.viz :as viz])
   (:import [java.io PushbackReader]))
 
@@ -24,6 +25,36 @@
         hashed-args (hash-user-arguments args options)
         valid-options (remove nil? (map #(find hashed-args (first %)) options))]
     (merge options (into {} (filter (comp some? val) valid-options)))))
+
+;; (defn symbol->pieces-as-symbols [sym]
+;;   (as-> sym __
+;;     (name __)
+;;     (str/split __ #"\.")
+;;     (map symbol __)))
+
+;; (defn pieces->ns-symbol [pieces]
+;;   (->> pieces
+;;        (str/join ".")
+;;        symbol))
+
+(defn ns-symbol->parent-ns-symbol [sym]
+  (as-> sym __
+    (name __)
+    (str/split __ #"\.")
+    (butlast __)
+    (str/join "." __)
+    (if (= __ "")
+      nil
+      (symbol __))))
+
+;; (defn ns-symbol->all-parent-ns-symbols-incl-self [sym]
+;;   (as-> sym __
+;;     (name __)
+;;     (str/split __ #"\.")
+;;     (iterate butlast __)
+;;     (take-while (comp not nil?)
+;;                 __)
+;;     (map pieces->ns-symbol __)))
 
 (defn nomis-ns-graph
   "Create a namespace dependency graph and save it as either nomis-ns-graph or the supplied name."
@@ -47,8 +78,14 @@
     (viz/save-graph
      nodes
      #(filter part-of-project? (ns-dep/immediate-dependencies dep-graph %))
-     :node->descriptor (fn [x] {:label x})
+     :node->descriptor (fn [x] {:label x
+                                :color :blue})
      :options {:dpi 72}
-     :filename (add-image-extension file-name))))
 
-;; TODO: maybe add option to show dependencies on external namespaces as well.
+     :cluster->descriptor (fn [n] {:label n})
+     :node->cluster ns-symbol->parent-ns-symbol
+     :cluster->parent (case 2
+                        1 ns-symbol->parent-ns-symbol
+                        2 {})
+     
+     :filename (add-image-extension file-name))))
