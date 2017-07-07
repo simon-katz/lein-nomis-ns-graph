@@ -1,0 +1,54 @@
+(ns leiningen.nomis-ns-graph
+  (:require [clojure.java.io :as io]
+            [clojure.set :as set]
+            [clojure.edn :as edn]
+            [clojure.tools.namespace.file :as ns-file]
+            [clojure.tools.namespace.track :as ns-track]
+            [clojure.tools.namespace.find :as ns-find]
+            [clojure.tools.namespace.parse :as parse]
+            [clojure.tools.namespace.dependency :as ns-dep]
+            [rhizome.viz :as viz])
+  (:import [java.io PushbackReader]))
+
+(defn- add-image-extension [name]
+  (str name ".png"))
+
+(defn- hash-user-arguments [args options]
+  (try (apply hash-map args)
+       (catch Exception e (do (println "WARNING: Optional argument missing a corresponding value. Defaulting."))
+              options)))
+
+(defn- build-arguments [args]
+  (let [options {"-name"     "nomis-ns-graph"
+                 "-platform" ":clj"}
+        hashed-args (hash-user-arguments args options)
+        valid-options (remove nil? (map #(find hashed-args (first %)) options))]
+    (merge options (into {} (filter (comp some? val) valid-options)))))
+
+(defn nomis-ns-graph
+  "Create a namespace dependency graph and save it as either nomis-ns-graph or the supplied name."
+  [project & args]
+  (let [built-args (build-arguments args)
+        file-name (get built-args "-name")
+        platform (case (edn/read-string (get built-args "-platform"))
+                   :clj ns-find/clj
+                   :cljs ns-find/cljs
+                   ns-find/clj)
+        source-files (apply set/union
+                            (map (comp #(ns-find/find-sources-in-dir % platform)
+                                       io/file)
+                                 (project :source-paths)))
+        tracker (ns-file/add-files {} source-files)
+        dep-graph (tracker ::ns-track/deps)
+        ns-names (set (map (comp second ns-file/read-file-ns-decl)
+                           source-files))
+        part-of-project? (partial contains? ns-names)
+        nodes (filter part-of-project? (ns-dep/nodes dep-graph))]
+    (viz/save-graph
+     nodes
+     #(filter part-of-project? (ns-dep/immediate-dependencies dep-graph %))
+     :node->descriptor (fn [x] {:label x})
+     :options {:dpi 72}
+     :filename (add-image-extension file-name))))
+
+;; TODO: maybe add option to show dependencies on external namespaces as well.
