@@ -2,9 +2,13 @@
   (:require [leiningen.nomis-ns-graph :refer :all]
             [midje.sweet :refer :all]))
 
-;; (fact "`symbol->pieces-as-symbols` works"
-;;   (symbol->pieces-as-symbols "a.bb.ccc")
-;;   => '[a bb ccc])
+(fact "`ns-symbol->pieces` works"
+  (ns-symbol->pieces "a.bb.ccc")
+  => '[a bb ccc])
+
+(fact "`ns-symbol->last-piece` works"
+  (ns-symbol->last-piece "a.bb.ccc")
+  => 'ccc)
 
 
 (fact "`ns-symbol->parent-ns-symbol` works"

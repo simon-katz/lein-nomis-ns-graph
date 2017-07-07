@@ -26,11 +26,16 @@
         valid-options (remove nil? (map #(find hashed-args (first %)) options))]
     (merge options (into {} (filter (comp some? val) valid-options)))))
 
-;; (defn symbol->pieces-as-symbols [sym]
-;;   (as-> sym __
-;;     (name __)
-;;     (str/split __ #"\.")
-;;     (map symbol __)))
+(defn ns-symbol->pieces [sym]
+  (as-> sym __
+    (name __)
+    (str/split __ #"\.")
+    (map symbol __)))
+
+(defn ns-symbol->last-piece [sym]
+  (-> sym
+      ns-symbol->pieces
+      last))
 
 ;; (defn pieces->ns-symbol [pieces]
 ;;   (->> pieces
@@ -78,11 +83,11 @@
     (viz/save-graph
      nodes
      #(filter part-of-project? (ns-dep/immediate-dependencies dep-graph %))
-     :node->descriptor (fn [x] {:label x
-                                :color :blue})
+     :node->descriptor (fn [x] {:label (ns-symbol->last-piece x)})
      :options {:dpi 72}
 
-     :cluster->descriptor (fn [n] {:label n})
+     :cluster->descriptor (fn [n] {:label n
+                                   :color :blue})
      :node->cluster ns-symbol->parent-ns-symbol
      :cluster->parent (case 2
                         1 ns-symbol->parent-ns-symbol
