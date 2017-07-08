@@ -82,46 +82,18 @@
         leaf-nodes (filter part-of-project? (ns-dep/nodes dep-graph))
         nodes (apply set/union
                      (map (comp set ns-symbol->all-parent-ns-symbols-incl-self)
-                          leaf-nodes))
-
-        g {:a [:b :c]
-           :b [:c]
-           :c [:a]}
-
-        ]
+                          leaf-nodes))]
     
-    (case 1
-      1 (viz/save-graph
-         nodes
-         #(filter part-of-project? (ns-dep/immediate-dependencies dep-graph %))
-         :node->descriptor (fn [x] {:label (ns-symbol->last-piece x)
-                                    :color :black})
-         :options {:dpi 72}
-
-         :do-not-show-clusters-as-nodes? true
-         
-         :cluster->descriptor (fn [n]
-                                {:label (ns-symbol->last-piece n)
-                                 :color :blue})
-         
-         :node->cluster ns-symbol->parent-ns-symbol
-
-         :cluster->parent ns-symbol->parent-ns-symbol
-         
-         :filename (add-image-extension file-name))
-
-      2 (viz/save-graph
-         (keys g) g
-         :node->descriptor (fn [n] {:label n})
-         :filename (add-image-extension file-name))
-
-      3 (viz/save-graph
-         (keys g) g
-         :cluster->descriptor (fn [n]
-                                (let [res {:label n
-                                           :color :blue}]
-                                  (println ":cluster->descriptor" n "->" res)
-                                  res))
-         :node->cluster identity
-         :cluster->parent {:b :c, :a :d}
-         :filename (add-image-extension file-name)))))
+    (viz/save-graph
+     nodes
+     #(filter part-of-project? (ns-dep/immediate-dependencies dep-graph %))
+     :node->descriptor (fn [x] {:label (ns-symbol->last-piece x)
+                                :color :black})
+     :options {:dpi 72}
+     :do-not-show-clusters-as-nodes? true
+     :cluster->descriptor (fn [n]
+                            {:label (ns-symbol->last-piece n)
+                             :color :blue})
+     :node->cluster ns-symbol->parent-ns-symbol
+     :cluster->parent ns-symbol->parent-ns-symbol
+     :filename (add-image-extension file-name))))
