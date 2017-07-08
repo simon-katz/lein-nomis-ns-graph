@@ -83,16 +83,16 @@
         nodes (apply set/union
                      (map (comp set ns-symbol->all-parent-ns-symbols-incl-self)
                           leaf-nodes))]
-    
     (viz/save-graph
      nodes
      #(filter part-of-project? (ns-dep/immediate-dependencies dep-graph %))
-     :node->descriptor (fn [x] {:label (ns-symbol->last-piece x)
-                                :color :black})
+     :node->descriptor (fn [x]
+                         {:label (ns-symbol->last-piece x)
+                          :color :black})
      :options {:dpi 72}
      :do-not-show-clusters-as-nodes? true
-     :cluster->descriptor (fn [n]
-                            {:label (ns-symbol->last-piece n)
+     :cluster->descriptor (fn [x]
+                            {:label (ns-symbol->last-piece x)
                              :color :blue})
      :node->cluster ns-symbol->parent-ns-symbol
      :cluster->parent ns-symbol->parent-ns-symbol
