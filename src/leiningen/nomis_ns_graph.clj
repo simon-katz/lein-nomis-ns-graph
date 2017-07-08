@@ -80,25 +80,15 @@
                            source-files))
         part-of-project? (partial contains? ns-names)
         leaf-nodes (filter part-of-project? (ns-dep/nodes dep-graph))
-
-        
-        
-        nodes (case 2
-                1 (apply set/union
-                         (map (comp set ns-symbol->all-parent-ns-symbols-incl-self)
-                              leaf-nodes))
-                2 (concat leaf-nodes
-                          #_(->> leaf-nodes
-                               (map ns-symbol->parent-ns-symbol)
-                               distinct)))
+        nodes (apply set/union
+                     (map (comp set ns-symbol->all-parent-ns-symbols-incl-self)
+                          leaf-nodes))
 
         g {:a [:b :c]
            :b [:c]
            :c [:a]}
 
         ]
-
-    (println "#### (sort nodes) =" (sort nodes))
     
     (case 1
       1 (viz/save-graph
@@ -107,28 +97,14 @@
          :node->descriptor (fn [x] {:label (ns-symbol->last-piece x)
                                     :color :black})
          :options {:dpi 72}
-
-         :cluster->descriptor (fn [n]
-                                (let [res {:label n
-                                           :color :blue}]
-                                  (println ":cluster->descriptor" n "->" res)
-                                  res))
          
-         :node->cluster (fn [n]
-                          (let [res (case 1
-                                      1 (ns-symbol->parent-ns-symbol n)
-                                      2 nil
-                                      3 :plop)]
-                            (println ":node->cluster" n "->" res)
-                            res))
+         :cluster->descriptor (fn [n]
+                                {:label (ns-symbol->last-piece n)
+                                 :color :blue})
+         
+         :node->cluster ns-symbol->parent-ns-symbol
 
-         :cluster->parent (case 1
-                            1 (fn [n]
-                                (let [parent (ns-symbol->parent-ns-symbol n)]
-                                  (if (.contains nodes parent)
-                                    parent
-                                    nil)))
-                            2 {})
+         :cluster->parent ns-symbol->parent-ns-symbol
          
          :filename (add-image-extension file-name))
 
