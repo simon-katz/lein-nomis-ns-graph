@@ -97,6 +97,8 @@
          :node->descriptor (fn [x] {:label (ns-symbol->last-piece x)
                                     :color :black})
          :options {:dpi 72}
+
+         :do-not-show-clusters-as-nodes? true
          
          :cluster->descriptor (fn [n]
                                 {:label (ns-symbol->last-piece n)
