@@ -37,10 +37,10 @@
       ns-symbol->pieces
       last))
 
-;; (defn pieces->ns-symbol [pieces]
-;;   (->> pieces
-;;        (str/join ".")
-;;        symbol))
+(defn pieces->ns-symbol [pieces]
+  (->> pieces
+       (str/join ".")
+       symbol))
 
 (defn ns-symbol->parent-ns-symbol [sym]
   (as-> sym __
@@ -52,14 +52,14 @@
       nil
       (symbol __))))
 
-;; (defn ns-symbol->all-parent-ns-symbols-incl-self [sym]
-;;   (as-> sym __
-;;     (name __)
-;;     (str/split __ #"\.")
-;;     (iterate butlast __)
-;;     (take-while (comp not nil?)
-;;                 __)
-;;     (map pieces->ns-symbol __)))
+(defn ns-symbol->all-parent-ns-symbols-incl-self [sym]
+  (as-> sym __
+    (name __)
+    (str/split __ #"\.")
+    (iterate butlast __)
+    (take-while (comp not nil?)
+                __)
+    (map pieces->ns-symbol __)))
 
 (defn nomis-ns-graph
   "Create a namespace dependency graph and save it as either nomis-ns-graph or the supplied name."
@@ -79,18 +79,71 @@
         ns-names (set (map (comp second ns-file/read-file-ns-decl)
                            source-files))
         part-of-project? (partial contains? ns-names)
-        nodes (filter part-of-project? (ns-dep/nodes dep-graph))]
-    (viz/save-graph
-     nodes
-     #(filter part-of-project? (ns-dep/immediate-dependencies dep-graph %))
-     :node->descriptor (fn [x] {:label (ns-symbol->last-piece x)})
-     :options {:dpi 72}
+        leaf-nodes (filter part-of-project? (ns-dep/nodes dep-graph))
 
-     :cluster->descriptor (fn [n] {:label n
-                                   :color :blue})
-     :node->cluster ns-symbol->parent-ns-symbol
-     :cluster->parent (case 2
-                        1 ns-symbol->parent-ns-symbol
-                        2 {})
-     
-     :filename (add-image-extension file-name))))
+        
+        
+        nodes (case 2
+                1 (apply set/union
+                         (map (comp set ns-symbol->all-parent-ns-symbols-incl-self)
+                              leaf-nodes))
+                2 (concat leaf-nodes
+                          #_(->> leaf-nodes
+                               (map ns-symbol->parent-ns-symbol)
+                               distinct)))
+
+        g {:a [:b :c]
+           :b [:c]
+           :c [:a]}
+
+        ]
+
+    (println "#### (sort nodes) =" (sort nodes))
+    
+    (case 1
+      1 (viz/save-graph
+         nodes
+         #(filter part-of-project? (ns-dep/immediate-dependencies dep-graph %))
+         :node->descriptor (fn [x] {:label (ns-symbol->last-piece x)
+                                    :color :black})
+         :options {:dpi 72}
+
+         :cluster->descriptor (fn [n]
+                                (let [res {:label n
+                                           :color :blue}]
+                                  (println ":cluster->descriptor" n "->" res)
+                                  res))
+         
+         :node->cluster (fn [n]
+                          (let [res (case 1
+                                      1 (ns-symbol->parent-ns-symbol n)
+                                      2 nil
+                                      3 :plop)]
+                            (println ":node->cluster" n "->" res)
+                            res))
+
+         :cluster->parent (case 1
+                            1 (fn [n]
+                                (let [parent (ns-symbol->parent-ns-symbol n)]
+                                  (if (.contains nodes parent)
+                                    parent
+                                    nil)))
+                            2 {})
+         
+         :filename (add-image-extension file-name))
+
+      2 (viz/save-graph
+         (keys g) g
+         :node->descriptor (fn [n] {:label n})
+         :filename (add-image-extension file-name))
+
+      3 (viz/save-graph
+         (keys g) g
+         :cluster->descriptor (fn [n]
+                                (let [res {:label n
+                                           :color :blue}]
+                                  (println ":cluster->descriptor" n "->" res)
+                                  res))
+         :node->cluster identity
+         :cluster->parent {:b :c, :a :d}
+         :filename (add-image-extension file-name)))))

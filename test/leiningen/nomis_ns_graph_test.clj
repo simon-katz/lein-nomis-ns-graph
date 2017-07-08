@@ -22,12 +22,12 @@
     => 'a.bb))
 
 
-;; (fact "`ns-symbol->all-parent-ns-symbols-incl-self` works"
+(fact "`ns-symbol->all-parent-ns-symbols-incl-self` works"
 
-;;   (fact
-;;     (ns-symbol->all-parent-ns-symbols-incl-self 'a.bb.ccc)
-;;     => '[a.bb.ccc a.bb a])
+  (fact
+    (ns-symbol->all-parent-ns-symbols-incl-self 'a.bb.ccc)
+    => '[a.bb.ccc a.bb a])
 
-;;   (fact
-;;     (ns-symbol->all-parent-ns-symbols-incl-self 'a)
-;;     => '[a]))
+  (fact
+    (ns-symbol->all-parent-ns-symbols-incl-self 'a)
+    => '[a]))
