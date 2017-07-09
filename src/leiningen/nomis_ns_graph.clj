@@ -29,9 +29,11 @@
                                         (throw (Exception. "Expected an even number of args")))))]
     (merge tentative-options
            {"-name" (or (get tentative-options "-name")
-                        (str "nomis-ns-graph"
-                             "-"
-                             (name (get tentative-options "-platform"))))})))
+                        (str "nomis-ns-graph-"
+                             (get tentative-options "-platform")
+                             (when (get tentative-options
+                                        "-show-non-project-deps")
+                               "-with-externals")))})))
 
 ;;;; ___________________________________________________________________________
 
