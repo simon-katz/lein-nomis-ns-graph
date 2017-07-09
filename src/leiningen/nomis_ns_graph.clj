@@ -35,7 +35,12 @@
                              (get tentative-options "-platform")
                              (when (get tentative-options
                                         "-show-non-project-deps")
-                               "-with-externals")))})))
+                               "-with-externals")))
+            :exclusions (if-let [excl-text (get tentative-options
+                                                "-exclusions")]
+                          (for [s (str/split excl-text #" ")]
+                            #(str/starts-with? % s))
+                          [])})))
 
 ;;;; ___________________________________________________________________________
 
@@ -118,9 +123,18 @@
                            source-files))
         ns-names-with-parents (ns-symbols->all-ns-symbols ns-names)
         part-of-project? (partial contains? ns-names-with-parents)
-        include-node? (if (get built-args "-show-non-project-deps")
-                        (constantly true)
-                        part-of-project?)
+        include-node? (fn [sym]
+                        (let [exclusions (:exclusions built-args)
+                              extra-exclusion (comp
+                                               not
+                                               (if (get built-args
+                                                        "-show-non-project-deps")
+                                                 (constantly true)
+                                                 part-of-project?))
+                              exclusions+ (cons extra-exclusion
+                                                exclusions)]
+                          (not ((apply some-fn exclusions+)
+                                sym))))
         leaf-nodes (filter include-node? (ns-dep/nodes dep-graph))
         nodes (ns-symbols->all-ns-symbols leaf-nodes)
         symbol->descriptor (fn [sym color]
