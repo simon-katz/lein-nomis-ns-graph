@@ -8,7 +8,8 @@
             [clojure.tools.namespace.find :as ns-find]
             [clojure.tools.namespace.parse :as parse]
             [clojure.tools.namespace.track :as ns-track]
-            [rhizome.viz :as viz])
+            [rhizome.viz :as viz]
+            [slingshot.slingshot :refer [throw+ try+]])
   (:import [java.io PushbackReader]))
 
 ;;;; ___________________________________________________________________________
@@ -26,7 +27,8 @@
   (let [tentative-options (merge default-options
                                  (try (apply hash-map args)
                                       (catch Exception e
-                                        (throw (Exception. "Expected an even number of args")))))]
+                                        (throw+ {:type :nomis-ns-graph/exception
+                                                 :message "xxxExpected an even number of args"}))))]
     (merge tentative-options
            {"-name" (or (get tentative-options "-name")
                         (str "nomis-ns-graph-"
@@ -149,9 +151,9 @@
 (defn nomis-ns-graph
   "Create a namespace dependency graph and save it as either nomis-ns-graph or the supplied name."
   [project & args]
-  (try (apply nomis-ns-graph*
-          project
-          args)
-       (catch Exception e
-         (println "Error:" (.getMessage e))
-         (System/exit 1))))
+  (try+ (apply nomis-ns-graph*
+               project
+               args)
+        (catch [:type :nomis-ns-graph/exception] {:keys [message]}
+          (println "Error:" message)
+          (System/exit 1))))
