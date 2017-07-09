@@ -27,8 +27,17 @@
   (let [tentative-options (merge default-options
                                  (try (apply hash-map args)
                                       (catch Exception e
+                                        (println "Error with args")
+                                        (println "(count args) =" (count args))
+                                        (doall (map-indexed
+                                                (fn [n x]
+                                                  (println (str "arg #" (inc n))
+                                                           x))
+                                                args))
                                         (throw+ {:type :nomis-ns-graph/exception
-                                                 :message "xxxExpected an even number of args"}))))]
+                                                 :message (str
+                                                           "Error when turning args into map: "
+                                                           (.getMessage e))}))))]
     (merge tentative-options
            {"-name" (or (get tentative-options "-name")
                         (str "nomis-ns-graph-"
