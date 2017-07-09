@@ -65,7 +65,7 @@
   "Create a namespace dependency graph and save it as either nomis-ns-graph or the supplied name."
   [project & args]
   (let [built-args (build-arguments args)
-        file-name (get built-args "-name")
+        filename (add-image-extension (get built-args "-name"))
         platform (case (edn/read-string (get built-args "-platform"))
                    :clj ns-find/clj
                    :cljs ns-find/cljs
@@ -96,4 +96,5 @@
                              :color :blue})
      :node->cluster ns-symbol->parent-ns-symbol
      :cluster->parent ns-symbol->parent-ns-symbol
-     :filename (add-image-extension file-name))))
+     :filename filename)
+    (println "Created" filename)))
