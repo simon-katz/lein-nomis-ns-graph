@@ -82,6 +82,11 @@
         :when (> freq 1)]
     id))
 
+(defn sym->style-map [part-of-project? sym]
+  {:style (if (part-of-project? sym)
+            :solid
+            :dashed)})
+
 (defn ^:private nomis-ns-graph* [project & args]
   (let [built-args (build-arguments args)
         filename (add-image-extension (get built-args "-name"))
@@ -117,18 +122,18 @@
         leaf-nodes (filter include-node? (ns-dep/nodes dep-graph))
         nodes (ns-symbols->all-ns-symbols leaf-nodes)
         symbol->descriptor (fn [sym color]
-                             (let [color color
-                                   style (if (part-of-project? sym)
-                                           :solid
-                                           :dashed)]
-                               {:label (ns-symbol->last-piece sym)
-                                :style style
-                                :color color
-                                :fontcolor color}))]
+                             (let [color color]
+                               (merge (sym->style-map part-of-project?
+                                                      sym)
+                                      {:label (ns-symbol->last-piece sym)
+                                       :color color
+                                       :fontcolor color})))]
     (viz/save-graph
      nodes
      #(filter include-node? (ns-dep/immediate-dependencies dep-graph %))
      :node->descriptor #(symbol->descriptor % :black)
+     :edge->descriptor #(sym->style-map part-of-project?
+                                        %2)
      :options {:dpi 72}
      :do-not-show-clusters-as-nodes? true
      :cluster->descriptor #(symbol->descriptor %
