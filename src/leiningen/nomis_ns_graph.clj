@@ -20,38 +20,47 @@
 
 ;;;; ___________________________________________________________________________
 
-(def ^:private default-options
-  {"-platform" "clj"
-   "-show-non-project-deps" false})
+(def understood-options
+  [:filename
+   :platform
+   :show-non-project-deps
+   :exclusions])
 
-(defn ^:private build-arguments [args]
-  (let [tentative-options (merge default-options
-                                 (try (apply hash-map args)
-                                      (catch Exception e
-                                        (lcm/warn "Error with args")
-                                        (lcm/warn "(count args) =" (count args))
-                                        (doall (map-indexed
-                                                (fn [n x]
-                                                  (lcm/warn (str "arg #" (inc n))
-                                                            x))
-                                                args))
-                                        (throw+ {:type :nomis-ns-graph/exception
-                                                 :message (str
-                                                           "Error when turning args into map: "
-                                                           (.getMessage e))}))))]
-    (merge tentative-options
-           {"-name" (or (get tentative-options "-name")
-                        (str "nomis-ns-graph-"
-                             (get tentative-options "-platform")
-                             (when (get tentative-options
-                                        "-show-non-project-deps")
-                               "-with-externals")))
-            :exclusions (if-let [excl-text (get tentative-options
-                                                "-exclusions")]
-                          (for [s (str/split excl-text
-                                             #" |\|")]
-                            #(str/starts-with? % s))
-                          [])})))
+(defn ^:private make-options [args]
+  (let [[cmd-line-options other-cmd-line-args] (lcm/parse-options args)
+        platform-text (or (:platform cmd-line-options)
+                          "clj")
+        show-non-project-deps (:show-non-project-deps cmd-line-options)
+        exclusions-text (:exclusions cmd-line-options)
+        filename (or (:filename cmd-line-options)
+                     (str "nomis-ns-graph-"
+                          (name platform-text)
+                          (when show-non-project-deps
+                            "-with-externals")))
+        platform (-> platform-text
+                     edn/read-string
+                     keyword)
+        printable-options {:filename filename
+                           :platform platform
+                           :show-non-project-deps show-non-project-deps
+                           :exclusions (if exclusions-text
+                                         (str/split exclusions-text
+                                                    #" |\|")
+                                         [])}
+        options (assoc printable-options
+                       :exclusions
+                       (for [s (:exclusions printable-options)]
+                         #(str/starts-with? % s)))]
+    (lcm/info "options =" printable-options)
+    (let [unknown-options (set/difference (-> options keys set)
+                                          understood-options)]
+      (when-not (empty? unknown-options)
+        (lcm/warn "Unknown options:" unknown-options)
+        (lcm/exit 1))
+      (when-not (empty? other-cmd-line-args)
+        (lcm/warn "Unknown other-cmd-line-args:" other-cmd-line-args)
+        (lcm/exit 1)))
+    options))
 
 ;;;; ___________________________________________________________________________
 
@@ -106,26 +115,26 @@
             :dashed)})
 
 (defn ^:private nomis-ns-graph* [project & args]
-  (let [built-args (build-arguments args)
-        filename (add-image-extension (get built-args "-name"))
-        platform-as-string (get built-args "-platform")
-        platform (case platform-as-string
-                   "clj" ns-find/clj
-                   "cljs" ns-find/cljs
-                   (do
-                     (lcm/info "Defaulting platform to clj")
-                     ns-find/clj))
-        source-paths (case platform-as-string
-                       "clj" (-> project
-                                 :source-paths)
-                       "cljs" (let [assumed-cljs-source-paths ["src/cljs"]]
-                                ;; FIXME assumed-cljs-source-paths
-                                (lcm/info "Assuming cljs source paths ="
-                                          assumed-cljs-source-paths)
-                                assumed-cljs-source-paths))
+  (let [options (make-options args)
+        filename (add-image-extension (:filename options))
+        platform (:platform options)
+        platform-for-ns (case platform
+                          :clj ns-find/clj
+                          :cljs ns-find/cljs
+                          (do
+                            (lcm/info "Defaulting platform to clj")
+                            ns-find/clj))
+        source-paths (case platform
+                       :clj (-> project
+                                :source-paths)
+                       :cljs (let [assumed-cljs-source-paths ["src/cljs"]]
+                               ;; FIXME assumed-cljs-source-paths
+                               (lcm/info "Assuming cljs source paths ="
+                                         assumed-cljs-source-paths)
+                               assumed-cljs-source-paths))
         source-files (apply set/union
                             (map (comp #(ns-find/find-sources-in-dir %
-                                                                     platform)
+                                                                     platform-for-ns)
                                        io/file)
                                  source-paths))
         tracker (ns-file/add-files {} source-files)
@@ -135,11 +144,10 @@
         ns-names-with-parents (ns-symbols->all-ns-symbols ns-names)
         part-of-project? (partial contains? ns-names-with-parents)
         include-node? (fn [sym]
-                        (let [exclusions (:exclusions built-args)
+                        (let [exclusions (:exclusions options)
                               extra-exclusion (comp
                                                not
-                                               (if (get built-args
-                                                        "-show-non-project-deps")
+                                               (if (:show-non-project-deps options)
                                                  (constantly true)
                                                  part-of-project?))
                               exclusions+ (cons extra-exclusion
