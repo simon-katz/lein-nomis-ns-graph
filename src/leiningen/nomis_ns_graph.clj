@@ -8,6 +8,7 @@
             [clojure.tools.namespace.find :as ns-find]
             [clojure.tools.namespace.parse :as parse]
             [clojure.tools.namespace.track :as ns-track]
+            [leiningen.core.main :as lcm]
             [rhizome.viz :as viz]
             [slingshot.slingshot :refer [throw+ try+]])
   (:import [java.io PushbackReader]))
@@ -27,12 +28,12 @@
   (let [tentative-options (merge default-options
                                  (try (apply hash-map args)
                                       (catch Exception e
-                                        (println "Error with args")
-                                        (println "(count args) =" (count args))
+                                        (lcm/warn "Error with args")
+                                        (lcm/warn "(count args) =" (count args))
                                         (doall (map-indexed
                                                 (fn [n x]
-                                                  (println (str "arg #" (inc n))
-                                                           x))
+                                                  (lcm/warn (str "arg #" (inc n))
+                                                            x))
                                                 args))
                                         (throw+ {:type :nomis-ns-graph/exception
                                                  :message (str
@@ -112,15 +113,15 @@
                    "clj" ns-find/clj
                    "cljs" ns-find/cljs
                    (do
-                     (println "Defaulting platform to clj")
+                     (lcm/info "Defaulting platform to clj")
                      ns-find/clj))
         source-paths (case platform-as-string
                        "clj" (-> project
                                  :source-paths)
                        "cljs" (let [assumed-cljs-source-paths ["src/cljs"]]
                                 ;; FIXME assumed-cljs-source-paths
-                                (println "Assuming cljs source paths ="
-                                         assumed-cljs-source-paths)
+                                (lcm/info "Assuming cljs source paths ="
+                                          assumed-cljs-source-paths)
                                 assumed-cljs-source-paths))
         source-files (apply set/union
                             (map (comp #(ns-find/find-sources-in-dir %
@@ -170,7 +171,7 @@
      :node->cluster ns-symbol->parent-ns-symbol
      :cluster->parent ns-symbol->parent-ns-symbol
      :filename filename)
-    (println "Created" filename)))
+    (lcm/info "Created" filename)))
 
 (defn nomis-ns-graph
   "Create a namespace dependency graph and save it as either nomis-ns-graph or the supplied name."
@@ -179,5 +180,5 @@
                project
                args)
         (catch [:type :nomis-ns-graph/exception] {:keys [message]}
-          (println "Error:" message)
-          (System/exit 1))))
+          (lcm/warn "Error:" message)
+          (lcm/exit 1))))
