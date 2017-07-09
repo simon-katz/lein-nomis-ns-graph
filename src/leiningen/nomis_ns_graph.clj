@@ -19,7 +19,8 @@
 ;;;; ___________________________________________________________________________
 
 (def ^:private default-options
-  {"-platform" "clj"})
+  {"-platform" "clj"
+   "-show-non-project-deps" false})
 
 (defn ^:private build-arguments [args]
   (let [tentative-options (merge default-options
@@ -69,6 +70,11 @@
                 __)
     (map pieces->ns-symbol __)))
 
+(defn ^:private ns-symbols->all-ns-symbols [ns-names]
+  (apply set/union
+         (map (comp set ns-symbol->all-parent-ns-symbols-incl-self)
+              ns-names)))
+
 (defn ^:private dups [seq]
   (for [[id freq] (frequencies seq)
         :when (> freq 1)]
@@ -101,26 +107,31 @@
         dep-graph (tracker ::ns-track/deps)
         ns-names (set (map (comp second ns-file/read-file-ns-decl)
                            source-files))
-        part-of-project? (partial contains? ns-names)
-        leaf-nodes (filter part-of-project? (ns-dep/nodes dep-graph))
-        nodes (apply set/union
-                     (map (comp set ns-symbol->all-parent-ns-symbols-incl-self)
-                          leaf-nodes))]
+        ns-names-with-parents (ns-symbols->all-ns-symbols ns-names)
+        part-of-project? (partial contains? ns-names-with-parents)
+        include-node? (if (get built-args "-show-non-project-deps")
+                        (constantly true)
+                        part-of-project?)
+        leaf-nodes (filter include-node? (ns-dep/nodes dep-graph))
+        nodes (ns-symbols->all-ns-symbols leaf-nodes)]    
     (viz/save-graph
      nodes
-     #(filter part-of-project? (ns-dep/immediate-dependencies dep-graph %))
+     #(filter include-node? (ns-dep/immediate-dependencies dep-graph %))
      :node->descriptor (fn [x]
                          {:label (ns-symbol->last-piece x)
-                          :color :black})
+                          :color (if (part-of-project? x)
+                                   (case 1 ; for easy dev/debug
+                                     1 :blue
+                                     2 :red
+                                     3 :purple)
+                                   :red)})
      :options {:dpi 72}
      :do-not-show-clusters-as-nodes? true
      :cluster->descriptor (fn [x]
                             {:label (ns-symbol->last-piece x)
-                             :color (case 1 ; for easy dev/debug
-                                      1 :blue
-                                      2 :red
-                                      3 :green
-                                      4 :purple)})
+                             :color (if (part-of-project? x)
+                                      :purple
+                                      :green)})
      :node->cluster ns-symbol->parent-ns-symbol
      :cluster->parent ns-symbol->parent-ns-symbol
      :filename filename)
