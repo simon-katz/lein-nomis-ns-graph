@@ -113,25 +113,27 @@
                         (constantly true)
                         part-of-project?)
         leaf-nodes (filter include-node? (ns-dep/nodes dep-graph))
-        nodes (ns-symbols->all-ns-symbols leaf-nodes)]    
+        nodes (ns-symbols->all-ns-symbols leaf-nodes)
+        symbol->descriptor (fn [sym color]
+                             (let [color color
+                                   style (if (part-of-project? sym)
+                                           :solid
+                                           :dashed)]
+                               {:label (ns-symbol->last-piece sym)
+                                :style style
+                                :color color
+                                :fontcolor color}))]
     (viz/save-graph
      nodes
      #(filter include-node? (ns-dep/immediate-dependencies dep-graph %))
-     :node->descriptor (fn [x]
-                         {:label (ns-symbol->last-piece x)
-                          :color (if (part-of-project? x)
-                                   (case 1 ; for easy dev/debug
-                                     1 :blue
-                                     2 :red
-                                     3 :purple)
-                                   :red)})
+     :node->descriptor #(symbol->descriptor % :black)
      :options {:dpi 72}
      :do-not-show-clusters-as-nodes? true
-     :cluster->descriptor (fn [x]
-                            {:label (ns-symbol->last-piece x)
-                             :color (if (part-of-project? x)
-                                      :purple
-                                      :green)})
+     :cluster->descriptor #(symbol->descriptor %
+                                               (case 1 ; for easy dev/debug
+                                                 1 :blue
+                                                 2 :red
+                                                 3 :purple))
      :node->cluster ns-symbol->parent-ns-symbol
      :cluster->parent ns-symbol->parent-ns-symbol
      :filename filename)
