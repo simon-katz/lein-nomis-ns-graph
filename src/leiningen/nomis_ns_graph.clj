@@ -47,7 +47,8 @@
                                "-with-externals")))
             :exclusions (if-let [excl-text (get tentative-options
                                                 "-exclusions")]
-                          (for [s (str/split excl-text #" ")]
+                          (for [s (str/split excl-text
+                                             #" |\|")]
                             #(str/starts-with? % s))
                           [])})))
 
