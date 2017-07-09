@@ -11,38 +11,46 @@
             [rhizome.viz :as viz])
   (:import [java.io PushbackReader]))
 
-(defn- add-image-extension [name]
+;;;; ___________________________________________________________________________
+
+(defn ^:private add-image-extension [name]
   (str name ".png"))
 
-(defn- hash-user-arguments [args options]
-  (try (apply hash-map args)
-       (catch Exception e (do (println "WARNING: Optional argument missing a corresponding value. Defaulting."))
-              options)))
+;;;; ___________________________________________________________________________
 
-(defn- build-arguments [args]
-  (let [options {"-name"     "nomis-ns-graph"
-                 "-platform" ":clj"}
-        hashed-args (hash-user-arguments args options)
-        valid-options (remove nil? (map #(find hashed-args (first %)) options))]
-    (merge options (into {} (filter (comp some? val) valid-options)))))
+(def ^:private default-options
+  {"-platform" "clj"})
 
-(defn ns-symbol->pieces [sym]
+(defn ^:private build-arguments [args]
+  (let [tentative-options (merge default-options
+                                 (try (apply hash-map args)
+                                      (catch Exception e
+                                        (throw (Exception. "Expected an even number of args")))))]
+    (merge tentative-options
+           {"-name" (or (get tentative-options "-name")
+                        (str "nomis-ns-graph"
+                             "-"
+                             (name (get tentative-options "-platform"))))})))
+
+;;;; ___________________________________________________________________________
+
+(defn ^:private ns-symbol->pieces [sym]
   (as-> sym __
     (name __)
     (str/split __ #"\.")
     (map symbol __)))
 
-(defn ns-symbol->last-piece [sym]
+(defn ^:private ns-symbol->last-piece [sym]
   (-> sym
       ns-symbol->pieces
       last))
 
-(defn pieces->ns-symbol [pieces]
+(defn ^:private pieces->ns-symbol [pieces]
   (->> pieces
        (str/join ".")
        symbol))
 
-(defn ns-symbol->parent-ns-symbol [sym]
+(defn ^:private ns-symbol->parent-ns-symbol [sym]
   (as-> sym __
     (name __)
     (str/split __ #"\.")
@@ -52,7 +60,7 @@
       nil
       (symbol __))))
 
-(defn ns-symbol->all-parent-ns-symbols-incl-self [sym]
+(defn ^:private ns-symbol->all-parent-ns-symbols-incl-self [sym]
   (as-> sym __
     (name __)
     (str/split __ #"\.")
@@ -61,19 +69,34 @@
                 __)
     (map pieces->ns-symbol __)))
 
-(defn nomis-ns-graph
-  "Create a namespace dependency graph and save it as either nomis-ns-graph or the supplied name."
-  [project & args]
+(defn ^:private dups [seq]
+  (for [[id freq] (frequencies seq)
+        :when (> freq 1)]
+    id))
+
+(defn ^:private nomis-ns-graph* [project & args]
   (let [built-args (build-arguments args)
         filename (add-image-extension (get built-args "-name"))
-        platform (case (edn/read-string (get built-args "-platform"))
-                   :clj ns-find/clj
-                   :cljs ns-find/cljs
-                   ns-find/clj)
+        platform-as-string (get built-args "-platform")
+        platform (case platform-as-string
+                   "clj" ns-find/clj
+                   "cljs" ns-find/cljs
+                   (do
+                     (println "Defaulting platform to clj")
+                     ns-find/clj))
+        source-paths (case platform-as-string
+                       "clj" (-> project
+                                 :source-paths)
+                       "cljs" (let [assumed-cljs-source-paths ["src/cljs"]]
+                                ;; FIXME assumed-cljs-source-paths
+                                (println "Assuming cljs source paths ="
+                                         assumed-cljs-source-paths)
+                                assumed-cljs-source-paths))
         source-files (apply set/union
-                            (map (comp #(ns-find/find-sources-in-dir % platform)
+                            (map (comp #(ns-find/find-sources-in-dir %
+                                                                     platform)
                                        io/file)
-                                 (project :source-paths)))
+                                 source-paths))
         tracker (ns-file/add-files {} source-files)
         dep-graph (tracker ::ns-track/deps)
         ns-names (set (map (comp second ns-file/read-file-ns-decl)
@@ -93,8 +116,22 @@
      :do-not-show-clusters-as-nodes? true
      :cluster->descriptor (fn [x]
                             {:label (ns-symbol->last-piece x)
-                             :color :blue})
+                             :color (case 1 ; for easy dev/debug
+                                      1 :blue
+                                      2 :red
+                                      3 :green
+                                      4 :purple)})
      :node->cluster ns-symbol->parent-ns-symbol
      :cluster->parent ns-symbol->parent-ns-symbol
      :filename filename)
     (println "Created" filename)))
+
+(defn nomis-ns-graph
+  "Create a namespace dependency graph and save it as either nomis-ns-graph or the supplied name."
+  [project & args]
+  (try (apply nomis-ns-graph*
+          project
+          args)
+       (catch Exception e
+         (println "Error:" (.getMessage e))
+         (System/exit 1))))
