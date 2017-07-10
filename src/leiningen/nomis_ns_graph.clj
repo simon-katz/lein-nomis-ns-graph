@@ -28,6 +28,16 @@
 
 (defn ^:private make-options [args]
   (let [[cmd-line-options other-cmd-line-args] (lcm/parse-options args)
+        _ (do (let [unknown-options (set/difference (-> cmd-line-options keys set)
+                                                    (set understood-options))]
+                (when-not (empty? unknown-options)
+                  (throw+ {:type :nomis-ns-graph/exception
+                           :message (str "Unknown options: "
+                                         unknown-options)}))
+                (when-not (empty? other-cmd-line-args)
+                  (throw+ {:type :nomis-ns-graph/exception
+                           :message (str "Unknown other-cmd-line-args: "
+                                         other-cmd-line-args)}))))
         ;; --------
         filename-text (:filename cmd-line-options)
         platform-text (or (:platform cmd-line-options)
@@ -53,14 +63,7 @@
                  :show-non-project-deps show-non-project-deps
                  :exclusions exclusions}]
     (lcm/info "options =" options)
-    (let [unknown-options (set/difference (-> options keys set)
-                                          understood-options)]
-      (when-not (empty? unknown-options)
-        (lcm/warn "Unknown options:" unknown-options)
-        (lcm/exit 1))
-      (when-not (empty? other-cmd-line-args)
-        (lcm/warn "Unknown other-cmd-line-args:" other-cmd-line-args)
-        (lcm/exit 1)))
+
     options))
 
 ;;;; ___________________________________________________________________________
