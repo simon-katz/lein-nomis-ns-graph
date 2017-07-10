@@ -3,6 +3,7 @@
   (:require [clojure.java.javadoc :refer [javadoc]]
             [clojure.pprint :refer [pp pprint]]
             [clojure.repl :refer :all]
+            [clojure.set :as set]
             [clojure.string :as str]
             [clojure.tools.namespace.move :refer :all]
             [clojure.tools.namespace.repl :refer :all]
