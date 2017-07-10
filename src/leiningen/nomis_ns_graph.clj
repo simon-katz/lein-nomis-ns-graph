@@ -57,6 +57,10 @@
                                     boolean))
         platform (or platform-raw
                      "clj")
+        _ (when-not (#{"clj" "cljs"} platform)
+            (throw+ {:type :nomis-ns-graph/exception
+                     :message (str "Bad platform: "
+                                   platform)}))
         filename (or filename-raw
                      (str "nomis-ns-graph-"
                           platform
@@ -133,10 +137,7 @@
         platform (:platform options)
         platform-for-ns (case platform
                           :clj ns-find/clj
-                          :cljs ns-find/cljs
-                          (do
-                            (lcm/info "Defaulting platform to clj")
-                            ns-find/clj))
+                          :cljs ns-find/cljs)
         source-paths (case platform
                        :clj (-> project
                                 :source-paths)
