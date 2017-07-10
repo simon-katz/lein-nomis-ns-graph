@@ -28,11 +28,14 @@
 
 (defn ^:private make-options [args]
   (let [[cmd-line-options other-cmd-line-args] (lcm/parse-options args)
+        ;; --------
+        filename-text (:filename cmd-line-options)
         platform-text (or (:platform cmd-line-options)
                           "clj")
         show-non-project-deps (:show-non-project-deps cmd-line-options)
         exclusions-text (:exclusions cmd-line-options)
-        filename (or (:filename cmd-line-options)
+        ;; --------
+        filename (or filename-text
                      (str "nomis-ns-graph-"
                           (name platform-text)
                           (when show-non-project-deps
@@ -40,18 +43,16 @@
         platform (-> platform-text
                      edn/read-string
                      keyword)
-        printable-options {:filename filename
-                           :platform platform
-                           :show-non-project-deps show-non-project-deps
-                           :exclusions (if exclusions-text
-                                         (str/split exclusions-text
-                                                    #" |\|")
-                                         [])}
-        options (assoc printable-options
-                       :exclusions
-                       (for [s (:exclusions printable-options)]
-                         #(str/starts-with? % s)))]
-    (lcm/info "options =" printable-options)
+        exclusions (if exclusions-text
+                     (str/split exclusions-text
+                                #" |\|")
+                     [])
+        ;; --------
+        options {:filename filename
+                 :platform platform
+                 :show-non-project-deps show-non-project-deps
+                 :exclusions exclusions}]
+    (lcm/info "options =" options)
     (let [unknown-options (set/difference (-> options keys set)
                                           understood-options)]
       (when-not (empty? unknown-options)
@@ -144,7 +145,8 @@
         ns-names-with-parents (ns-symbols->all-ns-symbols ns-names)
         part-of-project? (partial contains? ns-names-with-parents)
         include-node? (fn [sym]
-                        (let [exclusions (:exclusions options)
+                        (let [exclusions (for [s (:exclusions options)]
+                                           #(str/starts-with? % s))
                               extra-exclusion (comp
                                                not
                                                (if (:show-non-project-deps options)
