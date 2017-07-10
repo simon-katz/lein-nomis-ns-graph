@@ -27,7 +27,9 @@
     :exclusions})
 
 (defn ^:private make-options [args]
-  (let [[cmd-line-options other-cmd-line-args] (lcm/parse-options args)
+  (let [;; --------
+        ;; Basic parsing
+        [cmd-line-options other-cmd-line-args] (lcm/parse-options args)
         _ (do (let [unknown-options (set/difference (-> cmd-line-options
                                                         keys
                                                         set)
@@ -41,36 +43,37 @@
                            :message (str "Unknown other-cmd-line-args: "
                                          other-cmd-line-args)}))))
         ;; --------
-        filename-text (:filename cmd-line-options)
-        platform-text (or (:platform cmd-line-options)
-                          "clj")
+        ;; Get the raw stuff
+        filename-raw (:filename cmd-line-options)
+        platform-raw (:platform cmd-line-options)
         show-non-project-deps-raw (:show-non-project-deps cmd-line-options)
-        exclusions-text (:exclusions cmd-line-options)
+        exclusions-raw (:exclusions cmd-line-options)
         ;; --------
+        ;; Turn into user-oriented printable Clojure data
         show-non-project-deps (if (instance? Boolean show-non-project-deps-raw)
                                 show-non-project-deps-raw
                                 (-> show-non-project-deps-raw
                                     edn/read-string
                                     boolean))
-        filename (or filename-text
+        platform (or platform-raw
+                     "clj")
+        filename (or filename-raw
                      (str "nomis-ns-graph-"
-                          (name platform-text)
+                          platform
                           (when show-non-project-deps
                             "-with-externals")))
-        platform (-> platform-text
-                     edn/read-string
-                     keyword)
-        exclusions (if exclusions-text
-                     (str/split exclusions-text
+        exclusions (if exclusions-raw
+                     (str/split exclusions-raw
                                 #" |\|")
                      [])
-        ;; --------
         options {:filename filename
                  :platform platform
                  :show-non-project-deps show-non-project-deps
                  :exclusions exclusions}]
     (lcm/info "options =" options)
-    options))
+    (assoc options
+           ;; Transform into non-user-oriented printable Clojure data
+           :platform (-> options :platform edn/read-string keyword))))
 
 ;;;; ___________________________________________________________________________
 
