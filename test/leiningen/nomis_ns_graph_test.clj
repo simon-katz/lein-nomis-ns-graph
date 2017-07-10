@@ -13,7 +13,7 @@
     =>
     {:filename "nomis-ns-graph-clj"
      :platform :clj
-     :show-non-project-deps nil
+     :show-non-project-deps false
      :exclusions []})
 
   (fact "filename"
@@ -22,7 +22,7 @@
     =>
     {:filename "the-filename"
      :platform :clj
-     :show-non-project-deps nil
+     :show-non-project-deps false
      :exclusions []})
 
   (fact "platform :clj"
@@ -31,7 +31,7 @@
     =>
     {:filename "nomis-ns-graph-clj"
      :platform :clj
-     :show-non-project-deps nil
+     :show-non-project-deps false
      :exclusions []})
 
   (fact "platform :cljs"
@@ -40,7 +40,7 @@
     =>
     {:filename "nomis-ns-graph-cljs"
      :platform :cljs
-     :show-non-project-deps nil
+     :show-non-project-deps false
      :exclusions []})
 
   (fact "show-non-project-deps"
@@ -58,16 +58,16 @@
     =>
     {:filename "nomis-ns-graph-clj-with-externals"
      :platform :clj
-     :show-non-project-deps "yeah-man" ; FIXME
+     :show-non-project-deps true
      :exclusions []})
 
   (fact "show-non-project-deps false"
     (ltu/with-ignore-logging []
      (#'subject/make-options [":show-non-project-deps" "false"]))
     =>
-    {:filename "nomis-ns-graph-clj-with-externals"
+    {:filename "nomis-ns-graph-clj"
      :platform :clj
-     :show-non-project-deps "false" ; FIXME
+     :show-non-project-deps false
      :exclusions []})
 
   (fact "exclusions a"
@@ -76,7 +76,7 @@
     =>
     {:filename "nomis-ns-graph-clj"
      :platform :clj
-     :show-non-project-deps nil
+     :show-non-project-deps false
      :exclusions ["a"]})
 
   (fact "exclusions a b"
@@ -85,7 +85,7 @@
     =>
     {:filename "nomis-ns-graph-clj"
      :platform :clj
-     :show-non-project-deps nil
+     :show-non-project-deps false
      :exclusions ["a" "b"]})
 
   (fact "exclusions a|b"
@@ -94,7 +94,7 @@
     =>
     {:filename "nomis-ns-graph-clj"
      :platform :clj
-     :show-non-project-deps nil
+     :show-non-project-deps false
      :exclusions ["a" "b"]}))
 
 ;;;; ___________________________________________________________________________

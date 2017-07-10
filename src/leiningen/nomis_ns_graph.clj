@@ -20,16 +20,18 @@
 
 ;;;; ___________________________________________________________________________
 
-(def understood-options
-  [:filename
-   :platform
-   :show-non-project-deps
-   :exclusions])
+(def ^:private understood-options
+  #{:filename
+    :platform
+    :show-non-project-deps
+    :exclusions})
 
 (defn ^:private make-options [args]
   (let [[cmd-line-options other-cmd-line-args] (lcm/parse-options args)
-        _ (do (let [unknown-options (set/difference (-> cmd-line-options keys set)
-                                                    (set understood-options))]
+        _ (do (let [unknown-options (set/difference (-> cmd-line-options
+                                                        keys
+                                                        set)
+                                                    understood-options)]
                 (when-not (empty? unknown-options)
                   (throw+ {:type :nomis-ns-graph/exception
                            :message (str "Unknown options: "
@@ -42,9 +44,14 @@
         filename-text (:filename cmd-line-options)
         platform-text (or (:platform cmd-line-options)
                           "clj")
-        show-non-project-deps (:show-non-project-deps cmd-line-options)
+        show-non-project-deps-raw (:show-non-project-deps cmd-line-options)
         exclusions-text (:exclusions cmd-line-options)
         ;; --------
+        show-non-project-deps (if (instance? Boolean show-non-project-deps-raw)
+                                show-non-project-deps-raw
+                                (-> show-non-project-deps-raw
+                                    edn/read-string
+                                    boolean))
         filename (or filename-text
                      (str "nomis-ns-graph-"
                           (name platform-text)
@@ -63,7 +70,6 @@
                  :show-non-project-deps show-non-project-deps
                  :exclusions exclusions}]
     (lcm/info "options =" options)
-
     options))
 
 ;;;; ___________________________________________________________________________
