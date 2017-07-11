@@ -133,8 +133,11 @@
 
 (defn ^:private nomis-ns-graph* [project & args]
   (let [options (make-options args)
-        filename (add-image-extension (:filename options))
-        platform (:platform options)
+        {:keys [filename
+                platform
+                show-non-project-deps
+                exclusions]} options
+        filename-with-extension (add-image-extension filename)
         platform-for-ns (case platform
                           :clj ns-find/clj
                           :cljs ns-find/cljs)
@@ -158,15 +161,16 @@
         ns-names-with-parents (ns-symbols->all-ns-symbols ns-names)
         part-of-project? (partial contains? ns-names-with-parents)
         include-node? (fn [sym]
-                        (let [exclusions (for [s (:exclusions options)]
-                                           #(str/starts-with? % s))
-                              extra-exclusion (comp
-                                               not
-                                               (if (:show-non-project-deps options)
-                                                 (constantly true)
-                                                 part-of-project?))
-                              exclusions+ (cons extra-exclusion
-                                                exclusions)]
+                        (let [exclusion-fns (for [s exclusions]
+                                              #(str/starts-with? % s))
+                              
+                              extra-exclusion-fn (comp
+                                                  not
+                                                  (if show-non-project-deps
+                                                    (constantly true)
+                                                    part-of-project?))
+                              exclusions+ (cons extra-exclusion-fn
+                                                exclusion-fns)]
                           (not ((apply some-fn exclusions+)
                                 sym))))
         leaf-nodes (filter include-node? (ns-dep/nodes dep-graph))
@@ -193,7 +197,7 @@
                                                  3 :purple))
      :node->cluster ns-symbol->parent-ns-symbol
      :cluster->parent ns-symbol->parent-ns-symbol
-     :filename filename)
+     :filename filename-with-extension)
     (lcm/info "Created" filename)))
 
 (defn nomis-ns-graph
