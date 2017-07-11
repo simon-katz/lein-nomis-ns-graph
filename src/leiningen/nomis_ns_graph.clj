@@ -44,10 +44,10 @@
                                          other-cmd-line-args)}))))
         ;; --------
         ;; Get the raw stuff
-        filename-raw (:filename cmd-line-options)
-        platform-raw (:platform cmd-line-options)
-        show-non-project-deps-raw (:show-non-project-deps cmd-line-options)
-        exclusions-raw (:exclusions cmd-line-options)
+        {filename-raw              :filename
+         platform-raw              :platform
+         show-non-project-deps-raw :show-non-project-deps
+         exclusions-raw            :exclusions} cmd-line-options
         ;; --------
         ;; Turn into user-oriented printable Clojure data
         show-non-project-deps (if (instance? Boolean show-non-project-deps-raw)
