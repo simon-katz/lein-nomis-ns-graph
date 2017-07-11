@@ -197,6 +197,15 @@
                                                  3 :purple))
      :node->cluster ns-symbol->parent-ns-symbol
      :cluster->parent ns-symbol->parent-ns-symbol
+     :title (str "Namespace dependencies for "
+                 (:group project) "/" (:name project)
+                 " -- " (name platform)
+                 (when show-non-project-deps
+                   (str " -- showing external deps"))
+                 (when-not (empty? exclusions)
+                   (str " -- exclusions = \\\""
+                        (str/join " " exclusions)
+                        "\\\"")))
      :filename filename-with-extension)
     (lcm/info "Created" filename)))
 
