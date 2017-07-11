@@ -199,11 +199,11 @@
      :cluster->parent ns-symbol->parent-ns-symbol
      :title (str "Namespace dependencies for "
                  (:group project) "/" (:name project)
-                 " -- " (name platform)
+                 " &mdash; " (name platform)
                  (when show-non-project-deps
-                   (str " -- showing external deps"))
+                   (str " &mdash; showing external deps"))
                  (when-not (empty? exclusions)
-                   (str " -- exclusions = \\\""
+                   (str " &mdash; exclusions = \\\""
                         (str/join " " exclusions)
                         "\\\"")))
      :filename filename-with-extension)
