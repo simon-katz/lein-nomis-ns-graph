@@ -208,8 +208,8 @@
                         (apply str
                                (str/join "\\l"
                                          (map (partial str "    ")
-                                              exclusions)))
-                        "\\l")))
+                                              exclusions)))))
+                 "\\l")
      :filename filename-with-extension)
     (lcm/info "Created" filename)))
 
