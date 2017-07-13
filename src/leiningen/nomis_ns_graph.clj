@@ -198,9 +198,9 @@
      :node->cluster ns-symbol->parent-ns-symbol
      :cluster->parent ns-symbol->parent-ns-symbol
      :left-justify-cluster-labels? true
-     :title (str "Namespace dependencies for "
-                 (:group project) "/" (:name project)
-                 "\\lPlatform: " (name platform)
+     :title (str (str (str (:group project) "/" (:name project))
+                      " &mdash; Namespace dependencies")
+                 (str "\\lPlatform: " (name platform))
                  (when show-non-project-deps
                    "\\lShowing external dependencies")
                  (when-not (empty? exclusions)
