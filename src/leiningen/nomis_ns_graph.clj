@@ -200,13 +200,16 @@
      :left-justify-cluster-labels? true
      :title (str "Namespace dependencies for "
                  (:group project) "/" (:name project)
-                 " &mdash; " (name platform)
+                 "\\lPlatform: " (name platform)
                  (when show-non-project-deps
-                   (str " &mdash; showing external deps"))
+                   "\\lShowing external dependencies")
                  (when-not (empty? exclusions)
-                   (str " &mdash; exclusions = \\\""
-                        (str/join " " exclusions)
-                        "\\\"")))
+                   (str "\\lExclusions:\\l"
+                        (apply str
+                               (str/join "\\l"
+                                         (map (partial str "    ")
+                                              exclusions)))
+                        "\\l")))
      :filename filename-with-extension)
     (lcm/info "Created" filename)))
 
