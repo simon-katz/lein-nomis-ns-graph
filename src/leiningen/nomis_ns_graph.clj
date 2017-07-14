@@ -208,15 +208,18 @@
                       " namespace dependencies")
                  (str "\\l:platform: " (name platform))
                  (str "\\l:source-paths: "
-                      (let [root-path (str (-> (clojure.java.io/file ".")
-                                               .getCanonicalPath)
-                                           "/")]
-                        (str/join " "
-                                  (map #(str/replace-first
-                                         %
-                                         root-path
-                                         "")
-                                       source-paths))))
+                      (letfn [(fix-slashes [s]
+                                (str/replace s "\\" "/"))]
+                        (let [root-path (str (-> (clojure.java.io/file ".")
+                                                 .getCanonicalPath
+                                                 fix-slashes)
+                                             "/")]
+                          (str/join " "
+                                    (->> source-paths
+                                         (map fix-slashes)
+                                         (map #(str/replace-first %
+                                                                  root-path
+                                                                  "")))))))
                  (when show-non-project-deps 
                    "\\l:show-non-project-deps true")
                  (when-not (empty? exclusions)
