@@ -13,8 +13,9 @@
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
+     :source-paths nil
      :show-non-project-deps false
-     :exclusions []})
+     :exclusions nil})
 
   (fact "filename"
     (ltu/with-ignore-logging []
@@ -22,8 +23,9 @@
     =>
     {:filename "the-filename"
      :platform :clj
+     :source-paths nil
      :show-non-project-deps false
-     :exclusions []})
+     :exclusions nil})
 
   (fact "platform :clj"
     (ltu/with-ignore-logging []
@@ -31,8 +33,19 @@
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
+     :source-paths nil
      :show-non-project-deps false
-     :exclusions []})
+     :exclusions nil})
+
+  (fact "source paths"
+    (ltu/with-ignore-logging []
+     (#'subject/make-options [":source-paths" "a/b c/d|e/f"]))
+    =>
+    {:filename "nomis-ns-graph"
+     :platform :clj
+     :source-paths ["a/b" "c/d" "e/f"]
+     :show-non-project-deps false
+     :exclusions nil})
 
   (fact "platform :cljs"
     (ltu/with-ignore-logging []
@@ -40,8 +53,9 @@
     =>
     {:filename "nomis-ns-graph"
      :platform :cljs
+     :source-paths nil
      :show-non-project-deps false
-     :exclusions []})
+     :exclusions nil})
 
   (fact "show-non-project-deps"
     (ltu/with-ignore-logging []
@@ -49,8 +63,9 @@
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
+     :source-paths nil
      :show-non-project-deps true
-     :exclusions []})
+     :exclusions nil})
 
   (fact "show-non-project-deps yeah-man"
     (ltu/with-ignore-logging []
@@ -58,8 +73,9 @@
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
+     :source-paths nil
      :show-non-project-deps true
-     :exclusions []})
+     :exclusions nil})
 
   (fact "show-non-project-deps false"
     (ltu/with-ignore-logging []
@@ -67,8 +83,9 @@
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
+     :source-paths nil
      :show-non-project-deps false
-     :exclusions []})
+     :exclusions nil})
 
   (fact "exclusions a"
     (ltu/with-ignore-logging []
@@ -76,6 +93,7 @@
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
+     :source-paths nil
      :show-non-project-deps false
      :exclusions ["a"]})
 
@@ -85,6 +103,7 @@
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
+     :source-paths nil
      :show-non-project-deps false
      :exclusions ["a" "b"]})
 
@@ -94,6 +113,7 @@
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
+     :source-paths nil
      :show-non-project-deps false
      :exclusions ["a" "b"]}))
 

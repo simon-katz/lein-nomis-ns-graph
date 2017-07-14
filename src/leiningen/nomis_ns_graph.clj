@@ -23,6 +23,7 @@
 (def ^:private understood-options
   #{:filename
     :platform
+    :source-paths
     :show-non-project-deps
     :exclusions})
 
@@ -46,6 +47,7 @@
         ;; Get the raw stuff
         {filename-raw              :filename
          platform-raw              :platform
+         source-paths-raw          :source-paths
          show-non-project-deps-raw :show-non-project-deps
          exclusions-raw            :exclusions} cmd-line-options
         ;; --------
@@ -61,14 +63,19 @@
             (throw+ {:type :nomis-ns-graph/exception
                      :message (str "Bad platform: "
                                    platform)}))
+        source-paths (if source-paths-raw
+                       (str/split source-paths-raw
+                                  #" |\|")
+                       nil)
         filename (or filename-raw
                      "nomis-ns-graph")
         exclusions (if exclusions-raw
                      (str/split exclusions-raw
                                 #" |\|")
-                     [])
+                     nil)
         options {:filename filename
                  :platform platform
+                 :source-paths source-paths
                  :show-non-project-deps show-non-project-deps
                  :exclusions exclusions}]
     (lcm/info "options =" options)
@@ -132,20 +139,23 @@
   (let [options (make-options args)
         {:keys [filename
                 platform
+                source-paths
                 show-non-project-deps
                 exclusions]} options
         filename-with-extension (add-image-extension filename)
         platform-for-ns (case platform
                           :clj ns-find/clj
                           :cljs ns-find/cljs)
-        source-paths (case platform
-                       :clj (-> project
-                                :source-paths)
-                       :cljs (let [assumed-cljs-source-paths ["src/cljs"]]
-                               ;; FIXME assumed-cljs-source-paths
-                               (lcm/info "Assuming cljs source paths ="
-                                         assumed-cljs-source-paths)
-                               assumed-cljs-source-paths))
+        source-paths (or source-paths
+                         (case platform
+                           :clj (-> project
+                                    :source-paths)
+                           :cljs (let [assumed-cljs-source-paths ["src/cljs"
+                                                                  "cljs/src"]]
+                                   (lcm/info "Assuming cljs source paths ="
+                                             assumed-cljs-source-paths
+                                             "(you can override this with the :source-paths option).")
+                                   assumed-cljs-source-paths)))
         source-files (apply set/union
                             (map (comp #(ns-find/find-sources-in-dir %
                                                                      platform-for-ns)
@@ -160,7 +170,6 @@
         include-node? (fn [sym]
                         (let [exclusion-fns (for [s exclusions]
                                               #(str/starts-with? % s))
-                              
                               extra-exclusion-fn (comp
                                                   not
                                                   (if show-non-project-deps
@@ -197,11 +206,21 @@
      :left-justify-cluster-labels? true
      :title (str (str (str (:group project) "/" (:name project))
                       " namespace dependencies")
-                 (str "\\lPlatform: " (name platform))
-                 (when show-non-project-deps
-                   "\\lShowing external dependencies")
+                 (str "\\l:platform: " (name platform))
+                 (str "\\l:source-paths: "
+                      (let [root-path (str (-> (clojure.java.io/file ".")
+                                               .getCanonicalPath)
+                                           "/")]
+                        (str/join " "
+                                  (map #(str/replace-first
+                                         %
+                                         root-path
+                                         "")
+                                       source-paths))))
+                 (when show-non-project-deps 
+                   "\\l:show-non-project-deps true")
                  (when-not (empty? exclusions)
-                   (str "\\lExclusions:\\l"
+                   (str "\\l:exclusions:\\l"
                         (apply str
                                (str/join "\\l"
                                          (map (partial str "    ")
