@@ -1,14 +1,14 @@
 # lein-nomis-ns-graph
 
 A Leiningen plugin that shows a Clojure project's namespace dependencies
-and hierarchy as a graph.
+as a graph, and also shows the namespace hierarchy.
 
 
 ## Examples
 
 An example namespace graph:
 
-![An example namespace graph](examples/nomis-ns-graph-cljs-with-externals.png)
+![An example namespace graph](examples/example-nomis-ns-graph-001.png)
 
 
 ## Requirements
