@@ -4,7 +4,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :eval-in-leiningen true
-  :dependencies [[nomis-rhizome "0.3.0-SNAPSHOT"]
+  :dependencies [[nomis-rhizome "0.2.0"]
                  [org.clojure/tools.namespace "0.3.0-alpha4"]
                  [slingshot "0.12.2"]]
   :repl-options {:init-ns user}
