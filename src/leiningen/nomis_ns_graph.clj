@@ -16,7 +16,7 @@
 
 ;;;; ___________________________________________________________________________
 
-(defn ^:private add-image-extension [name]
+(defn ^:private add-png-extension [name]
   (str name ".png"))
 
 ;;;; ___________________________________________________________________________
@@ -143,7 +143,6 @@
                 source-paths
                 show-non-project-deps
                 exclusions]} options
-        filename-with-extension (add-image-extension filename)
         platform-for-ns (case platform
                           :clj ns-find/clj
                           :cljs ns-find/cljs)
@@ -230,10 +229,11 @@
                                                       (map (partial str "    ")
                                                            exclusions)))))
                               "\\l"))]
-    (-> dot-data
-        viz/dot->image
-        (viz/save-image filename-with-extension))
-    (lcm/info "Created" filename)))
+    (let [png-filename (add-png-extension filename)]
+      (-> dot-data
+          viz/dot->image
+          (viz/save-image png-filename))
+      (lcm/info "Created" png-filename))))
 
 (defn nomis-ns-graph
   "Create a namespace dependency graph and save it."
