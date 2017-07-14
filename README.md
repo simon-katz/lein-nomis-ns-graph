@@ -17,14 +17,12 @@ An example namespace graph:
 
 ## Installation and Usage
 
-Add a dependency to the `:plugins` vector of your `:user` profile.
+Add `[lein-nomis-ns-graph "0.11.0"]` to the `:plugins` vector of your `:user`
+profile.
 
-Latest version: [![Clojars Project](https://img.shields.io/clojars/v/lein-nomis-ns-graph.svg)](https://clojars.org/lein-nomis-ns-graph)
-
-Latest stable version: `[lein-nomis-ns-graph "0.11.0"]`
-
-Note that some of the features documented below may not be in the latest stable
-version.
+Note that some of the features documented below may not be in the latest
+version. You could check https://clojars.org/lein-nomis-ns-graph to see if
+there is a later snapshot version.
 
 ## Usage
 
