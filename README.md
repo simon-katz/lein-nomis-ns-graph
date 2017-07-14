@@ -13,6 +13,8 @@ the fork.
 
 ## Examples
 
+An example namespace graph:
+
 ![An example namespace graph](examples/nomis-ns-graph-cljs-with-externals.png)
 
 
