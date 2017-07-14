@@ -11,7 +11,7 @@
     (ltu/with-ignore-logging []
      (#'subject/make-options []))
     =>
-    {:filename "nomis-ns-graph-clj"
+    {:filename "nomis-ns-graph"
      :platform :clj
      :show-non-project-deps false
      :exclusions []})
@@ -29,7 +29,7 @@
     (ltu/with-ignore-logging []
      (#'subject/make-options [":platform" "clj"]))
     =>
-    {:filename "nomis-ns-graph-clj"
+    {:filename "nomis-ns-graph"
      :platform :clj
      :show-non-project-deps false
      :exclusions []})
@@ -38,7 +38,7 @@
     (ltu/with-ignore-logging []
      (#'subject/make-options [":platform" "cljs"]))
     =>
-    {:filename "nomis-ns-graph-cljs"
+    {:filename "nomis-ns-graph"
      :platform :cljs
      :show-non-project-deps false
      :exclusions []})
@@ -47,7 +47,7 @@
     (ltu/with-ignore-logging []
      (#'subject/make-options [":show-non-project-deps"]))
     =>
-    {:filename "nomis-ns-graph-clj-with-externals"
+    {:filename "nomis-ns-graph"
      :platform :clj
      :show-non-project-deps true
      :exclusions []})
@@ -56,7 +56,7 @@
     (ltu/with-ignore-logging []
      (#'subject/make-options [":show-non-project-deps" "yeah-man"]))
     =>
-    {:filename "nomis-ns-graph-clj-with-externals"
+    {:filename "nomis-ns-graph"
      :platform :clj
      :show-non-project-deps true
      :exclusions []})
@@ -65,7 +65,7 @@
     (ltu/with-ignore-logging []
      (#'subject/make-options [":show-non-project-deps" "false"]))
     =>
-    {:filename "nomis-ns-graph-clj"
+    {:filename "nomis-ns-graph"
      :platform :clj
      :show-non-project-deps false
      :exclusions []})
@@ -74,7 +74,7 @@
     (ltu/with-ignore-logging []
      (#'subject/make-options [":exclusions" "a"]))
     =>
-    {:filename "nomis-ns-graph-clj"
+    {:filename "nomis-ns-graph"
      :platform :clj
      :show-non-project-deps false
      :exclusions ["a"]})
@@ -83,7 +83,7 @@
     (ltu/with-ignore-logging []
      (#'subject/make-options [":exclusions" "a b"]))
     =>
-    {:filename "nomis-ns-graph-clj"
+    {:filename "nomis-ns-graph"
      :platform :clj
      :show-non-project-deps false
      :exclusions ["a" "b"]})
@@ -92,7 +92,7 @@
     (ltu/with-ignore-logging []
      (#'subject/make-options [":exclusions" "a|b"]))
     =>
-    {:filename "nomis-ns-graph-clj"
+    {:filename "nomis-ns-graph"
      :platform :clj
      :show-non-project-deps false
      :exclusions ["a" "b"]}))

@@ -62,10 +62,7 @@
                      :message (str "Bad platform: "
                                    platform)}))
         filename (or filename-raw
-                     (str "nomis-ns-graph-"
-                          platform
-                          (when show-non-project-deps
-                            "-with-externals")))
+                     "nomis-ns-graph")
         exclusions (if exclusions-raw
                      (str/split exclusions-raw
                                 #" |\|")
