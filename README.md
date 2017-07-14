@@ -1,15 +1,8 @@
 # lein-nomis-ns-graph
 
-This is a Leiningen plugin to show the namespace hierarchies and dependencies of
-Clojure project sources as a graph.
+A Leiningen plugin that shows a Clojure project's namespace dependencies
+and hierarchy as a graph.
 
-Inspired by the following:
-
-* https://github.com/hilverd/lein-ns-dep-graph (which was copied to get started).
-* https://github.com/alexander-yakushev/ns-graph
-
-This documentation hasn't been updated to include the newly-added features in
-the fork.
 
 ## Examples
 
@@ -20,8 +13,7 @@ An example namespace graph:
 
 ## Requirements
 
-You will need to have [Graphviz](http://www.graphviz.org/) installed. Run `dot
--V` at the command line to check.
+* [Graphviz](http://www.graphviz.org/) must be installed. (Run `dot -V` at the command line to check whether you have it.)
 
 ## Installation and Usage
 
@@ -89,7 +81,7 @@ As for source paths, the separator for the source paths can be a vertical bar
 (|).
 
 
-## Acknowledgements
+## Acknowledgments
 
 Inspired by the following:
 
@@ -97,7 +89,7 @@ Inspired by the following:
 * https://github.com/alexander-yakushev/ns-graph
 
 
-The plugin itself is tiny, all the hard work is done by
+The plugin itself is small; all the hard work is done by
 [clojure.tools.namespace](https://github.com/clojure/tools.namespace) and
 [Rhizome](https://github.com/ztellman/rhizome).
 
