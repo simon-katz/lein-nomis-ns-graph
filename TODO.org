@@ -1,4 +1,4 @@
-* TODO Option to print the dot stuff
+* DONE Option to print the dot stuff
 ** This means using the `rhizome.dot` ns
 * TODO Tests for the generated dot stuff
 * TODO Tidy the code
