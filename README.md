@@ -38,6 +38,7 @@ within the project's `.clj` sources.
 ### Specifying an Output File
 
 To specify a different output file:
+
     lein nomis-ns-graph :filename foo
 
 The default is `nomis-ns-graph`.
