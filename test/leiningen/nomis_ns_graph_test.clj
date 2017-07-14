@@ -9,113 +9,135 @@
 
   (fact "No args"
     (ltu/with-ignore-logging []
-     (#'subject/make-options []))
+      (#'subject/make-options []))
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
      :source-paths nil
      :show-non-project-deps false
-     :exclusions nil})
+     :exclusions nil
+     :write-gv-file? false})
 
   (fact "filename"
     (ltu/with-ignore-logging []
-     (#'subject/make-options [":filename" "the-filename"]))
+      (#'subject/make-options [":filename" "the-filename"]))
     =>
     {:filename "the-filename"
      :platform :clj
      :source-paths nil
      :show-non-project-deps false
-     :exclusions nil})
+     :exclusions nil
+     :write-gv-file? false})
 
   (fact "platform :clj"
     (ltu/with-ignore-logging []
-     (#'subject/make-options [":platform" "clj"]))
+      (#'subject/make-options [":platform" "clj"]))
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
      :source-paths nil
      :show-non-project-deps false
-     :exclusions nil})
+     :exclusions nil
+     :write-gv-file? false})
 
   (fact "source paths"
     (ltu/with-ignore-logging []
-     (#'subject/make-options [":source-paths" "a/b c/d|e/f"]))
+      (#'subject/make-options [":source-paths" "a/b c/d|e/f"]))
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
      :source-paths ["a/b" "c/d" "e/f"]
      :show-non-project-deps false
-     :exclusions nil})
+     :exclusions nil
+     :write-gv-file? false})
 
   (fact "platform :cljs"
     (ltu/with-ignore-logging []
-     (#'subject/make-options [":platform" "cljs"]))
+      (#'subject/make-options [":platform" "cljs"]))
     =>
     {:filename "nomis-ns-graph"
      :platform :cljs
      :source-paths nil
      :show-non-project-deps false
-     :exclusions nil})
+     :exclusions nil
+     :write-gv-file? false})
 
   (fact "show-non-project-deps"
     (ltu/with-ignore-logging []
-     (#'subject/make-options [":show-non-project-deps"]))
+      (#'subject/make-options [":show-non-project-deps"]))
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
      :source-paths nil
      :show-non-project-deps true
-     :exclusions nil})
+     :exclusions nil
+     :write-gv-file? false})
 
   (fact "show-non-project-deps yeah-man"
     (ltu/with-ignore-logging []
-     (#'subject/make-options [":show-non-project-deps" "yeah-man"]))
+      (#'subject/make-options [":show-non-project-deps" "yeah-man"]))
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
      :source-paths nil
      :show-non-project-deps true
-     :exclusions nil})
+     :exclusions nil
+     :write-gv-file? false})
 
   (fact "show-non-project-deps false"
     (ltu/with-ignore-logging []
-     (#'subject/make-options [":show-non-project-deps" "false"]))
+      (#'subject/make-options [":show-non-project-deps" "false"]))
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
      :source-paths nil
      :show-non-project-deps false
-     :exclusions nil})
+     :exclusions nil
+     :write-gv-file? false})
 
   (fact "exclusions a"
     (ltu/with-ignore-logging []
-     (#'subject/make-options [":exclusions" "a"]))
+      (#'subject/make-options [":exclusions" "a"]))
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
      :source-paths nil
      :show-non-project-deps false
-     :exclusions ["a"]})
+     :exclusions ["a"]
+     :write-gv-file? false})
 
   (fact "exclusions a b"
     (ltu/with-ignore-logging []
-     (#'subject/make-options [":exclusions" "a b"]))
+      (#'subject/make-options [":exclusions" "a b"]))
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
      :source-paths nil
      :show-non-project-deps false
-     :exclusions ["a" "b"]})
+     :exclusions ["a" "b"]
+     :write-gv-file? false})
 
   (fact "exclusions a|b"
     (ltu/with-ignore-logging []
-     (#'subject/make-options [":exclusions" "a|b"]))
+      (#'subject/make-options [":exclusions" "a|b"]))
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
      :source-paths nil
      :show-non-project-deps false
-     :exclusions ["a" "b"]}))
+     :exclusions ["a" "b"]
+     :write-gv-file? false})
+
+  (fact "write-gv-file?"
+    (ltu/with-ignore-logging []
+      (#'subject/make-options [":write-gv-file?"]))
+    =>
+    {:filename "nomis-ns-graph"
+     :platform :clj
+     :source-paths nil
+     :show-non-project-deps false
+     :exclusions nil
+     :write-gv-file? true}))
 
 ;;;; ___________________________________________________________________________
 

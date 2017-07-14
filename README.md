@@ -41,7 +41,8 @@ To specify a different output file:
 
     lein nomis-ns-graph :filename foo
 
-The default is `nomis-ns-graph`.
+This will produce a file named `foo.png` instead of the default
+`nomis-ns-graph.png`.
 
 ### ClojureScript
 
@@ -81,6 +82,23 @@ Namespaces are not shown if they start with any of the supplied strings.
 As for source paths, the separator for the source paths can be a vertical bar
 (|).
 
+### Writing a .gv File
+
+To write a `.gv` file:
+
+    lein nomis-ns-graph :write-gv-file?
+
+lein-nomis-ns-graph uses Graphviz under the covers.
+
+Before the `.png` file is produced, an intermediate Graphviz dot file format
+version of the namespace graph is produced.
+
+If this option is provided, lein-nomis-ns-graph writes the intermediate version
+to a file. The file has the same base name as the `.png` file, but a `.gv`
+extension.
+
+The Graphviz dot file format is a text format, so this is useful when developing
+and debugging.
 
 ## Acknowledgments
 

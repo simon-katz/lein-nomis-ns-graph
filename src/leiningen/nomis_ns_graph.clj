@@ -19,6 +19,9 @@
 (defn ^:private add-png-extension [name]
   (str name ".png"))
 
+(defn ^:private add-gv-extension [name]
+  (str name ".gv"))
+
 ;;;; ___________________________________________________________________________
 
 (def ^:private understood-options
@@ -26,7 +29,8 @@
     :platform
     :source-paths
     :show-non-project-deps
-    :exclusions})
+    :exclusions
+    :write-gv-file?})
 
 (defn ^:private make-options [args]
   (let [;; --------
@@ -50,7 +54,8 @@
          platform-raw              :platform
          source-paths-raw          :source-paths
          show-non-project-deps-raw :show-non-project-deps
-         exclusions-raw            :exclusions} cmd-line-options
+         exclusions-raw            :exclusions
+         write-gv-file?-raw        :write-gv-file?} cmd-line-options
         ;; --------
         ;; Turn into user-oriented printable Clojure data
         show-non-project-deps (if (instance? Boolean show-non-project-deps-raw)
@@ -58,6 +63,11 @@
                                 (-> show-non-project-deps-raw
                                     edn/read-string
                                     boolean))
+        write-gv-file? (if (instance? Boolean write-gv-file?-raw)
+                         write-gv-file?-raw
+                         (-> write-gv-file?-raw
+                             edn/read-string
+                             boolean))
         platform (or platform-raw
                      "clj")
         _ (when-not (#{"clj" "cljs"} platform)
@@ -78,7 +88,8 @@
                  :platform platform
                  :source-paths source-paths
                  :show-non-project-deps show-non-project-deps
-                 :exclusions exclusions}]
+                 :exclusions exclusions
+                 :write-gv-file? write-gv-file?}]
     (lcm/info "options =" options)
     (assoc options
            ;; Transform into non-user-oriented printable Clojure data
@@ -142,7 +153,8 @@
                 platform
                 source-paths
                 show-non-project-deps
-                exclusions]} options
+                exclusions
+                write-gv-file?]} options
         platform-for-ns (case platform
                           :clj ns-find/clj
                           :cljs ns-find/cljs)
@@ -229,6 +241,11 @@
                                                       (map (partial str "    ")
                                                            exclusions)))))
                               "\\l"))]
+    (when write-gv-file?
+      (let [gv-filename (add-gv-extension filename)]
+        (spit gv-filename
+              dot-data)
+        (lcm/info "Created" gv-filename)))
     (let [png-filename (add-png-extension filename)]
       (-> dot-data
           viz/dot->image
