@@ -17,7 +17,7 @@ An example namespace graph:
 
 ## Installation and Usage
 
-Put `[lein-nomis-ns-graph "0.10.0"]` into the `:plugins` vector of your
+Put `[lein-nomis-ns-graph "0.11.0"]` into the `:plugins` vector of your
 `:user` profile.
 
 
