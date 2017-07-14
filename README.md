@@ -25,23 +25,13 @@ You will need to have [Graphviz](http://www.graphviz.org/) installed. Run `dot
 
 ## Installation and Usage
 
-Put `[lein-nomis-ns-graph "x.x.x"]` into the `:plugins` vector of your
-`:user` profile. Then run
-
-    lein nomis-ns-graph
-
-from a Clojure project directory. This outputs a file `ns-nomis-graph.png` showing
-the internal namespace dependencies of the project's `.clj` sources.
-Dependencies on external namespaces, say `clojure.java.io`, are not shown.
-
-You can also pass an optional platform argument to generate a graph for ClojureScript
-
-    lein nomis-ns-graph :cljs # or
-    lein nomis-ns-graph :clj
+Put `[lein-nomis-ns-graph "0.10.0-SNAPSHOT"]` into the `:plugins` vector of your
+`:user` profile.
 
 
 ## Usage
 
+Run when in a Clojure project directory.
 
 ### Basic Usage
 
@@ -49,14 +39,13 @@ To show dependencies between Clojure namespaces:
 
     lein nomis-ns-graph
 
-Produces a file called `nomis-ns-graph.png`.
+This produces a file called `nomis-ns-graph.png` showing namespace dependencies
+within the project's `.clj` sources.
 
-The filename can be overridden by using the `:filename` command-line argument.
 
 ### Specifying an Output File
 
 To specify a different output file:
-
     lein nomis-ns-graph :filename foo
 
 The default is `nomis-ns-graph`.
