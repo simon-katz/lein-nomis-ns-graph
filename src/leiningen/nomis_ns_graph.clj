@@ -9,6 +9,7 @@
             [clojure.tools.namespace.parse :as parse]
             [clojure.tools.namespace.track :as ns-track]
             [leiningen.core.main :as lcm]
+            [rhizome.dot :as dot]
             [rhizome.viz :as viz]
             [slingshot.slingshot :refer [throw+ try+]])
   (:import [java.io PushbackReader]))
@@ -187,49 +188,51 @@
                                                       sym)
                                       {:label (ns-symbol->last-piece sym)
                                        :color color
-                                       :fontcolor color})))]
-    (viz/save-graph
-     nodes
-     #(filter include-node? (ns-dep/immediate-dependencies dep-graph %))
-     :node->descriptor #(symbol->descriptor % :black)
-     :edge->descriptor #(sym->style-map part-of-project?
-                                        %2)
-     :options {:dpi 72}
-     :do-not-show-clusters-as-nodes? true
-     :cluster->descriptor #(symbol->descriptor %
-                                               (case 1 ; for easy dev/debug
-                                                 1 :blue
-                                                 2 :red
-                                                 3 :purple))
-     :node->cluster ns-symbol->parent-ns-symbol
-     :cluster->parent ns-symbol->parent-ns-symbol
-     :left-justify-cluster-labels? true
-     :title (str (str (str (:group project) "/" (:name project))
-                      " namespace dependencies")
-                 (str "\\l:platform: " (name platform))
-                 (str "\\l:source-paths: "
-                      (letfn [(fix-slashes [s]
-                                (str/replace s "\\" "/"))]
-                        (let [root-path (str (-> (clojure.java.io/file ".")
-                                                 .getCanonicalPath
-                                                 fix-slashes)
-                                             "/")]
-                          (str/join " "
-                                    (->> source-paths
-                                         (map fix-slashes)
-                                         (map #(str/replace-first %
-                                                                  root-path
-                                                                  "")))))))
-                 (when show-non-project-deps 
-                   "\\l:show-non-project-deps true")
-                 (when-not (empty? exclusions)
-                   (str "\\l:exclusions:\\l"
-                        (apply str
-                               (str/join "\\l"
-                                         (map (partial str "    ")
-                                              exclusions)))))
-                 "\\l")
-     :filename filename-with-extension)
+                                       :fontcolor color})))
+        dot-data (dot/graph->dot
+                  nodes
+                  #(filter include-node? (ns-dep/immediate-dependencies dep-graph %))
+                  :node->descriptor #(symbol->descriptor % :black)
+                  :edge->descriptor #(sym->style-map part-of-project?
+                                                     %2)
+                  :options {:dpi 72}
+                  :do-not-show-clusters-as-nodes? true
+                  :cluster->descriptor #(symbol->descriptor %
+                                                            (case 1 ; for easy dev/debug
+                                                              1 :blue
+                                                              2 :red
+                                                              3 :purple))
+                  :node->cluster ns-symbol->parent-ns-symbol
+                  :cluster->parent ns-symbol->parent-ns-symbol
+                  :left-justify-cluster-labels? true
+                  :title (str (str (str (:group project) "/" (:name project))
+                                   " namespace dependencies")
+                              (str "\\l:platform: " (name platform))
+                              (str "\\l:source-paths: "
+                                   (letfn [(fix-slashes [s]
+                                             (str/replace s "\\" "/"))]
+                                     (let [root-path (str (-> (clojure.java.io/file ".")
+                                                              .getCanonicalPath
+                                                              fix-slashes)
+                                                          "/")]
+                                       (str/join " "
+                                                 (->> source-paths
+                                                      (map fix-slashes)
+                                                      (map #(str/replace-first %
+                                                                               root-path
+                                                                               "")))))))
+                              (when show-non-project-deps 
+                                "\\l:show-non-project-deps true")
+                              (when-not (empty? exclusions)
+                                (str "\\l:exclusions:\\l"
+                                     (apply str
+                                            (str/join "\\l"
+                                                      (map (partial str "    ")
+                                                           exclusions)))))
+                              "\\l"))]
+    (-> dot-data
+        viz/dot->image
+        (viz/save-image filename-with-extension))
     (lcm/info "Created" filename)))
 
 (defn nomis-ns-graph
