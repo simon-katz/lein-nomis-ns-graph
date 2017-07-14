@@ -1,1 +1,5 @@
 * TODO Don't show non-project dependees whose dependers are excluded
+* TODO Bug: If there are namespaces x.y and x.y.z
+** Something goes weird -- what was it exactly?
+*** One of them gets displayed with an internal name
+*** Do you need exclusions for that to happen?
