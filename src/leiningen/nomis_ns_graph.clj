@@ -199,7 +199,7 @@
      :cluster->parent ns-symbol->parent-ns-symbol
      :left-justify-cluster-labels? true
      :title (str (str (str (:group project) "/" (:name project))
-                      " &mdash; Namespace dependencies")
+                      " namespace dependencies")
                  (str "\\lPlatform: " (name platform))
                  (when show-non-project-deps
                    "\\lShowing external dependencies")
@@ -214,7 +214,7 @@
     (lcm/info "Created" filename)))
 
 (defn nomis-ns-graph
-  "Create a namespace dependency graph and save it as either nomis-ns-graph or the supplied name."
+  "Create a namespace dependency graph and save it."
   [project & args]
   (try+ (apply nomis-ns-graph*
                project
