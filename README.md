@@ -15,14 +15,10 @@ An example namespace graph:
 
 * [Graphviz](http://www.graphviz.org/) must be installed. (Run `dot -V` at the command line to check whether you have it.)
 
-## Installation and Usage
+## Installation
 
 Add `[lein-nomis-ns-graph "0.11.0"]` to the `:plugins` vector of your `:user`
 profile.
-
-Note that some of the features documented below may not be in the latest
-version. You could check https://clojars.org/lein-nomis-ns-graph to see if
-there is a later snapshot version.
 
 ## Usage
 
@@ -84,6 +80,14 @@ Namespaces are not shown if they start with any of the supplied strings.
 
 As for source paths, the separator for the source paths can be a vertical bar
 (|).
+
+## New Features
+
+The features documented in this section are not yet released.
+
+They may or may not be in the latest snapshot version.
+(You could check https://clojars.org/lein-nomis-ns-graph for the latest
+snapshot version.)
 
 ### Writing a .gv File
 
