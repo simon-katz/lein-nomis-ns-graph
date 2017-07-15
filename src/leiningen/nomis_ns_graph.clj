@@ -1,7 +1,7 @@
 (ns leiningen.nomis-ns-graph
-  (:require [clojure.edn :as edn]
-            [clojure.java.io :as io]
+  (:require [clojure.java.io :as io]
             [clojure.set :as set]
+            [leiningen.nomis-ns-graph.args :as args]
             [clojure.string :as str]
             [clojure.tools.namespace.dependency :as ctns-dep]
             [clojure.tools.namespace.file :as ctns-file]
@@ -13,87 +13,6 @@
             [rhizome.viz :as viz]
             [slingshot.slingshot :refer [throw+ try+]])
   (:import [java.io PushbackReader]))
-
-;;;; ___________________________________________________________________________
-
-(defn ^:private add-png-extension [name]
-  (str name ".png"))
-
-(defn ^:private add-gv-extension [name]
-  (str name ".gv"))
-
-;;;; ___________________________________________________________________________
-
-(def ^:private understood-options
-  #{:filename
-    :platform
-    :source-paths
-    :show-non-project-deps
-    :exclusions
-    :write-gv-file?})
-
-(defn ^:private make-options [args]
-  (let [;; --------
-        ;; Basic parsing
-        [cmd-line-options other-cmd-line-args] (lcm/parse-options args)
-        _ (do (let [unknown-options (set/difference (-> cmd-line-options
-                                                        keys
-                                                        set)
-                                                    understood-options)]
-                (when-not (empty? unknown-options)
-                  (throw+ {:type :nomis-ns-graph/exception
-                           :message (str "Unknown options: "
-                                         unknown-options)}))
-                (when-not (empty? other-cmd-line-args)
-                  (throw+ {:type :nomis-ns-graph/exception
-                           :message (str "Unknown other-cmd-line-args: "
-                                         other-cmd-line-args)}))))
-        ;; --------
-        ;; Get the raw stuff
-        {filename-raw              :filename
-         platform-raw              :platform
-         source-paths-raw          :source-paths
-         show-non-project-deps-raw :show-non-project-deps
-         exclusions-raw            :exclusions
-         write-gv-file?-raw        :write-gv-file?} cmd-line-options
-        ;; --------
-        ;; Turn into user-oriented printable Clojure data
-        show-non-project-deps (if (instance? Boolean show-non-project-deps-raw)
-                                show-non-project-deps-raw
-                                (-> show-non-project-deps-raw
-                                    edn/read-string
-                                    boolean))
-        write-gv-file? (if (instance? Boolean write-gv-file?-raw)
-                         write-gv-file?-raw
-                         (-> write-gv-file?-raw
-                             edn/read-string
-                             boolean))
-        platform (or platform-raw
-                     "clj")
-        _ (when-not (#{"clj" "cljs"} platform)
-            (throw+ {:type :nomis-ns-graph/exception
-                     :message (str "Bad platform: "
-                                   platform)}))
-        source-paths (if source-paths-raw
-                       (str/split source-paths-raw
-                                  #" |\|")
-                       nil)
-        filename (or filename-raw
-                     "nomis-ns-graph")
-        exclusions (if exclusions-raw
-                     (str/split exclusions-raw
-                                #" |\|")
-                     nil)
-        options {:filename filename
-                 :platform platform
-                 :source-paths source-paths
-                 :show-non-project-deps show-non-project-deps
-                 :exclusions exclusions
-                 :write-gv-file? write-gv-file?}]
-    (lcm/info "options =" options)
-    (assoc options
-           ;; Transform into non-user-oriented printable Clojure data
-           :platform (-> options :platform edn/read-string keyword))))
 
 ;;;; ___________________________________________________________________________
 
@@ -232,8 +151,16 @@
                               "\\l"))]
     dot-data))
 
+;;;; ___________________________________________________________________________
+
+(defn ^:private add-png-extension [name]
+  (str name ".png"))
+
+(defn ^:private add-gv-extension [name]
+  (str name ".gv"))
+
 (defn ^:private nomis-ns-graph* [project & args]
-  (let [options (make-options args)
+  (let [options (args/make-options args)
         {:keys [filename
                 platform
                 source-paths
@@ -257,7 +184,6 @@
                        :project-group         (:group project)
                        :project-name          (:name project)}
         dot-data (ns-graph-spec->dot-data ns-graph-spec)]
-    
     (when write-gv-file?
       (let [gv-filename (add-gv-extension filename)]
         (spit gv-filename
