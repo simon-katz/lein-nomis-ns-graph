@@ -15,12 +15,11 @@
     :exclusions
     :write-gv-file?})
 
-(defn make-command-line-options [command-line-args]
-  (let [;; --------
-        ;; Basic parsing
-        [cmd-line-options other-cmd-line-args] (lcm/parse-options
-                                                command-line-args)
-        _ (do (let [unknown-options (set/difference (-> cmd-line-options
+(defn ^:private command-line-args->raw-options [command-line-args]
+  ;; Basic processing of command-line args.
+  (let [[raw-options
+         other-cmd-line-args] (lcm/parse-options command-line-args)
+        _ (do (let [unknown-options (set/difference (-> raw-options
                                                         keys
                                                         set)
                                                     understood-options)]
@@ -31,50 +30,62 @@
                 (when-not (empty? other-cmd-line-args)
                   (throw+ {:type :nomis-ns-graph/exception
                            :message (str "Unknown other-cmd-line-args: "
-                                         other-cmd-line-args)}))))
-        ;; --------
-        ;; Get the raw stuff
-        {filename-raw              :filename
+                                         other-cmd-line-args)}))))]
+    raw-options))
+
+;;;; ___________________________________________________________________________
+
+(defn ^:private boolean-ify [raw-value]
+  (if (instance? Boolean raw-value)
+    raw-value
+    (-> raw-value
+        edn/read-string
+        boolean)))
+
+(defn ^:private raw-options->options-for-printing [raw-options]
+  ;; Transform into user-oriented printable Clojure data.
+  (let [{filename-raw              :filename
          platform-raw              :platform
          source-paths-raw          :source-paths
          show-non-project-deps-raw :show-non-project-deps
          exclusions-raw            :exclusions
-         write-gv-file?-raw        :write-gv-file?} cmd-line-options
-        ;; --------
-        ;; Turn into user-oriented printable Clojure data
-        show-non-project-deps (if (instance? Boolean show-non-project-deps-raw)
-                                show-non-project-deps-raw
-                                (-> show-non-project-deps-raw
-                                    edn/read-string
-                                    boolean))
-        write-gv-file? (if (instance? Boolean write-gv-file?-raw)
-                         write-gv-file?-raw
-                         (-> write-gv-file?-raw
-                             edn/read-string
-                             boolean))
-        platform (or platform-raw
-                     "clj")
-        _ (when-not (#{"clj" "cljs"} platform)
-            (throw+ {:type :nomis-ns-graph/exception
-                     :message (str "Bad platform: "
-                                   platform)}))
-        source-paths (if source-paths-raw
-                       (str/split source-paths-raw
-                                  #" |\|")
-                       nil)
-        filename (or filename-raw
-                     "nomis-ns-graph")
-        exclusions (if exclusions-raw
-                     (str/split exclusions-raw
-                                #" |\|")
-                     nil)
-        options {:platform platform
-                 :source-paths source-paths
-                 :show-non-project-deps show-non-project-deps
-                 :exclusions exclusions
-                 :filename filename
-                 :write-gv-file? write-gv-file?}]
-    (lcm/info "options =" options)
-    (assoc options
-           ;; Transform into non-user-oriented printable Clojure data
-           :platform (-> options :platform edn/read-string keyword))))
+         write-gv-file?-raw        :write-gv-file?} raw-options]
+    (when-not (or (nil? platform-raw)
+                  (#{"clj" "cljs"} platform-raw))
+      (throw+ {:type :nomis-ns-graph/exception
+               :message (str "Bad platform: "
+                             platform-raw)}))
+    {:platform              (or platform-raw
+                                "clj")
+     :source-paths          (if source-paths-raw
+                              (str/split source-paths-raw
+                                         #" |\|")
+                              nil)
+     :show-non-project-deps (boolean-ify show-non-project-deps-raw)
+     :exclusions            (if exclusions-raw
+                              (str/split exclusions-raw
+                                         #" |\|")
+                              nil)
+     :filename              (or filename-raw
+                                "nomis-ns-graph")
+     :write-gv-file?        (boolean-ify write-gv-file?-raw)}))
+
+;;;; ___________________________________________________________________________
+
+(defn ^:private options-for-printing->options [options-for-printing]
+  ;; Transform into non-user-oriented Clojure data.
+  (assoc options-for-printing
+         :platform (-> options-for-printing
+                       :platform
+                       edn/read-string
+                       keyword)))
+
+;;;; ___________________________________________________________________________
+
+(defn make-command-line-options [command-line-args]
+  (let [options-for-printing (-> command-line-args
+                                 command-line-args->raw-options
+                                 raw-options->options-for-printing)]
+    (lcm/info "options =" options-for-printing)
+    (-> options-for-printing
+        options-for-printing->options)))

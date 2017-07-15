@@ -31,8 +31,8 @@
 (defn ^:private nomis-ns-graph* [project & command-line-args]
   (let [command-line-options (args/make-command-line-options command-line-args)
         specs (options/project-&-command-line-options->specs
-                               project
-                               command-line-options)
+               project
+               command-line-options)
         {:keys [ns-graph-spec
                 output-spec]} specs
         dot-data (graph/ns-graph-spec->dot-data ns-graph-spec)]
