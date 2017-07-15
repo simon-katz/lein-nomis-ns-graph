@@ -28,22 +28,23 @@
           (viz/save-image png-filename))
       (lcm/info "Created" png-filename))))
 
-(defn ^:private nomis-ns-graph* [project & args]
-  (let [command-line-options (args/make-command-line-options args)
-        {:keys [ns-graph-spec
-                output-spec]} (options/project-&-command-line-options->specs
+(defn ^:private nomis-ns-graph* [project & command-line-args]
+  (let [command-line-options (args/make-command-line-options command-line-args)
+        specs (options/project-&-command-line-options->specs
                                project
                                command-line-options)
+        {:keys [ns-graph-spec
+                output-spec]} specs
         dot-data (graph/ns-graph-spec->dot-data ns-graph-spec)]
     (write-output dot-data
                   output-spec)))
 
 (defn nomis-ns-graph
   "Create a namespace dependency graph and save it."
-  [project & args]
+  [project & command-line-args]
   (try+ (apply nomis-ns-graph*
                project
-               args)
+               command-line-args)
         (catch [:type :nomis-ns-graph/exception] {:keys [message]}
           (lcm/warn "Error:" message)
           (lcm/exit 1))))
