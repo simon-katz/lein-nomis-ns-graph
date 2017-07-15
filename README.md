@@ -117,7 +117,7 @@ Inspired by the following:
 
 The plugin itself is small; all the hard work is done by
 [clojure.tools.namespace](https://github.com/clojure/tools.namespace) and
-[Rhizome](https://github.com/ztellman/rhizome).
+[nomis-rhizome](https://github.com/simon-katz/nomis-rhizome).
 
 ## License
 
