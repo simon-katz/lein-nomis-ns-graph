@@ -3,11 +3,11 @@
             [clojure.java.io :as io]
             [clojure.set :as set]
             [clojure.string :as str]
-            [clojure.tools.namespace.dependency :as ns-dep]
-            [clojure.tools.namespace.file :as ns-file]
-            [clojure.tools.namespace.find :as ns-find]
-            [clojure.tools.namespace.parse :as parse]
-            [clojure.tools.namespace.track :as ns-track]
+            [clojure.tools.namespace.dependency :as ctns-dep]
+            [clojure.tools.namespace.file :as ctns-file]
+            [clojure.tools.namespace.find :as ctns-find]
+            ;; [clojure.tools.namespace.parse :as ctns-parse]
+            [clojure.tools.namespace.track :as ctns-track]
             [leiningen.core.main :as lcm]
             [rhizome.dot :as dot]
             [rhizome.viz :as viz]
@@ -156,8 +156,8 @@
                 exclusions
                 write-gv-file?]} options
         platform-for-ns (case platform
-                          :clj ns-find/clj
-                          :cljs ns-find/cljs)
+                          :clj ctns-find/clj
+                          :cljs ctns-find/cljs)
         source-paths (or source-paths
                          (case platform
                            :clj (-> project
@@ -169,13 +169,13 @@
                                              "(you can override this with the :source-paths option).")
                                    assumed-cljs-source-paths)))
         source-files (apply set/union
-                            (map (comp #(ns-find/find-sources-in-dir %
-                                                                     platform-for-ns)
+                            (map (comp #(ctns-find/find-sources-in-dir %
+                                                                       platform-for-ns)
                                        io/file)
                                  source-paths))
-        tracker (ns-file/add-files {} source-files)
-        dep-graph (tracker ::ns-track/deps)
-        ns-names (set (map (comp second ns-file/read-file-ns-decl)
+        tracker (ctns-file/add-files {} source-files)
+        dep-graph (tracker ::ctns-track/deps)
+        ns-names (set (map (comp second ctns-file/read-file-ns-decl)
                            source-files))
         ns-names-with-parents (ns-symbols->all-ns-symbols ns-names)
         part-of-project? (partial contains? ns-names-with-parents)
@@ -191,7 +191,7 @@
                                                 exclusion-fns)]
                           (not ((apply some-fn exclusions+)
                                 sym))))
-        leaf-nodes (filter include-node? (ns-dep/nodes dep-graph))
+        leaf-nodes (filter include-node? (ctns-dep/nodes dep-graph))
         nodes (ns-symbols->all-ns-symbols leaf-nodes)
         symbol->descriptor (fn [sym color]
                              (let [color color]
@@ -202,7 +202,7 @@
                                        :fontcolor color})))
         dot-data (dot/graph->dot
                   nodes
-                  #(filter include-node? (ns-dep/immediate-dependencies dep-graph %))
+                  #(filter include-node? (ctns-dep/immediate-dependencies dep-graph %))
                   :node->descriptor #(symbol->descriptor % :black)
                   :edge->descriptor #(sym->style-map part-of-project?
                                                      %2)
