@@ -8,20 +8,14 @@
 
 ;;;; ___________________________________________________________________________
 
-(defn ^:private add-png-extension [name]
-  (str name ".png"))
-
-(defn ^:private add-gv-extension [name]
-  (str name ".gv"))
-
-(defn ^:private nomis-ns-graph* [project & args]
-  (let [options (args/make-options args)
-        {:keys [filename
-                platform
+(defn ^:private project-&-command-line-options->specs [project
+                                                       command-line-options]
+  (let [{:keys [platform
                 source-paths
                 show-non-project-deps
                 exclusions
-                write-gv-file?]} options
+                filename
+                write-gv-file?]} command-line-options
         source-paths (or source-paths
                          (case platform
                            :clj (-> project
@@ -31,14 +25,27 @@
                                    (lcm/info "Assuming cljs source paths ="
                                              assumed-cljs-source-paths
                                              "(you can override this with the :source-paths option).")
-                                   assumed-cljs-source-paths)))
-        ns-graph-spec {:platform              platform
-                       :source-paths          source-paths
-                       :exclusions            exclusions
-                       :show-non-project-deps show-non-project-deps
-                       :project-group         (:group project)
-                       :project-name          (:name project)}
-        dot-data (graph/ns-graph-spec->dot-data ns-graph-spec)]
+                                   assumed-cljs-source-paths)))]
+    {:ns-graph-spec {:platform              platform
+                     :source-paths          source-paths
+                     :exclusions            exclusions
+                     :show-non-project-deps show-non-project-deps
+                     :project-group         (:group project)
+                     :project-name          (:name project)}
+     :output-spec   {:filename filename
+                     :write-gv-file? write-gv-file?}}))
+
+;;;; ___________________________________________________________________________
+
+(defn ^:private add-png-extension [name]
+  (str name ".png"))
+
+(defn ^:private add-gv-extension [name]
+  (str name ".gv"))
+
+(defn ^:private write-output [dot-data output-spec]
+  (let [{:keys [filename
+                write-gv-file?]} output-spec]
     (when write-gv-file?
       (let [gv-filename (add-gv-extension filename)]
         (spit gv-filename
@@ -49,6 +56,16 @@
           viz/dot->image
           (viz/save-image png-filename))
       (lcm/info "Created" png-filename))))
+
+(defn ^:private nomis-ns-graph* [project & args]
+  (let [command-line-options (args/make-command-line-options args)
+        {:keys [ns-graph-spec
+                output-spec]} (project-&-command-line-options->specs
+                               project
+                               command-line-options)
+        dot-data (graph/ns-graph-spec->dot-data ns-graph-spec)]
+    (write-output dot-data
+                  output-spec)))
 
 (defn nomis-ns-graph
   "Create a namespace dependency graph and save it."

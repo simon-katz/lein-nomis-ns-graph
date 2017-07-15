@@ -5,11 +5,11 @@
 
 ;;;; ___________________________________________________________________________
 
-(fact `make-options` works
+(fact `make-command-line-options` works
 
   (fact "No args"
     (ltu/with-ignore-logging []
-      (make-options []))
+      (make-command-line-options []))
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
@@ -20,7 +20,7 @@
 
   (fact "filename"
     (ltu/with-ignore-logging []
-      (make-options [":filename" "the-filename"]))
+      (make-command-line-options [":filename" "the-filename"]))
     =>
     {:filename "the-filename"
      :platform :clj
@@ -31,7 +31,7 @@
 
   (fact "platform :clj"
     (ltu/with-ignore-logging []
-      (make-options [":platform" "clj"]))
+      (make-command-line-options [":platform" "clj"]))
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
@@ -42,7 +42,7 @@
 
   (fact "source paths"
     (ltu/with-ignore-logging []
-      (make-options [":source-paths" "a/b c/d|e/f"]))
+      (make-command-line-options [":source-paths" "a/b c/d|e/f"]))
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
@@ -53,7 +53,7 @@
 
   (fact "platform :cljs"
     (ltu/with-ignore-logging []
-      (make-options [":platform" "cljs"]))
+      (make-command-line-options [":platform" "cljs"]))
     =>
     {:filename "nomis-ns-graph"
      :platform :cljs
@@ -64,7 +64,7 @@
 
   (fact "show-non-project-deps"
     (ltu/with-ignore-logging []
-      (make-options [":show-non-project-deps"]))
+      (make-command-line-options [":show-non-project-deps"]))
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
@@ -75,7 +75,7 @@
 
   (fact "show-non-project-deps yeah-man"
     (ltu/with-ignore-logging []
-      (make-options [":show-non-project-deps" "yeah-man"]))
+      (make-command-line-options [":show-non-project-deps" "yeah-man"]))
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
@@ -86,7 +86,7 @@
 
   (fact "show-non-project-deps false"
     (ltu/with-ignore-logging []
-      (make-options [":show-non-project-deps" "false"]))
+      (make-command-line-options [":show-non-project-deps" "false"]))
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
@@ -97,7 +97,7 @@
 
   (fact "exclusions a"
     (ltu/with-ignore-logging []
-      (make-options [":exclusions" "a"]))
+      (make-command-line-options [":exclusions" "a"]))
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
@@ -108,7 +108,7 @@
 
   (fact "exclusions a b"
     (ltu/with-ignore-logging []
-      (make-options [":exclusions" "a b"]))
+      (make-command-line-options [":exclusions" "a b"]))
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
@@ -119,7 +119,7 @@
 
   (fact "exclusions a|b"
     (ltu/with-ignore-logging []
-      (make-options [":exclusions" "a|b"]))
+      (make-command-line-options [":exclusions" "a|b"]))
     =>
     {:filename "nomis-ns-graph"
      :platform :clj
@@ -130,7 +130,7 @@
 
   (fact "write-gv-file?"
     (ltu/with-ignore-logging []
-      (make-options [":write-gv-file?"]))
+      (make-command-line-options [":write-gv-file?"]))
     =>
     {:filename "nomis-ns-graph"
      :platform :clj

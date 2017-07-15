@@ -15,10 +15,11 @@
     :exclusions
     :write-gv-file?})
 
-(defn make-options [args]
+(defn make-command-line-options [command-line-args]
   (let [;; --------
         ;; Basic parsing
-        [cmd-line-options other-cmd-line-args] (lcm/parse-options args)
+        [cmd-line-options other-cmd-line-args] (lcm/parse-options
+                                                command-line-args)
         _ (do (let [unknown-options (set/difference (-> cmd-line-options
                                                         keys
                                                         set)
@@ -67,11 +68,11 @@
                      (str/split exclusions-raw
                                 #" |\|")
                      nil)
-        options {:filename filename
-                 :platform platform
+        options {:platform platform
                  :source-paths source-paths
                  :show-non-project-deps show-non-project-deps
                  :exclusions exclusions
+                 :filename filename
                  :write-gv-file? write-gv-file?}]
     (lcm/info "options =" options)
     (assoc options
