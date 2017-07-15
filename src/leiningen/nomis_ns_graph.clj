@@ -147,27 +147,16 @@
             :solid
             :dashed)})
 
-(defn ^:private nomis-ns-graph* [project & args]
-  (let [options (make-options args)
-        {:keys [filename
-                platform
-                source-paths
-                show-non-project-deps
-                exclusions
-                write-gv-file?]} options
-        platform-for-ns (case platform
+(defn ^:private ns-graph-spec->dot-data [{:keys [platform
+                                                 source-paths
+                                                 exclusions
+                                                 show-non-project-deps
+                                                 project-group
+                                                 project-name]
+                                          :as ns-graph-spec}]
+  (let [platform-for-ns (case platform
                           :clj ctns-find/clj
                           :cljs ctns-find/cljs)
-        source-paths (or source-paths
-                         (case platform
-                           :clj (-> project
-                                    :source-paths)
-                           :cljs (let [assumed-cljs-source-paths ["src/cljs"
-                                                                  "cljs/src"]]
-                                   (lcm/info "Assuming cljs source paths ="
-                                             assumed-cljs-source-paths
-                                             "(you can override this with the :source-paths option).")
-                                   assumed-cljs-source-paths)))
         source-files (apply set/union
                             (map (comp #(ctns-find/find-sources-in-dir %
                                                                        platform-for-ns)
@@ -216,7 +205,7 @@
                   :node->cluster ns-symbol->parent-ns-symbol
                   :cluster->parent ns-symbol->parent-ns-symbol
                   :left-justify-cluster-labels? true
-                  :title (str (str (str (:group project) "/" (:name project))
+                  :title (str (str (str project-group "/" project-name)
                                    " namespace dependencies")
                               (str "\\l:platform: " (name platform))
                               (str "\\l:source-paths: "
@@ -241,6 +230,34 @@
                                                       (map (partial str "    ")
                                                            exclusions)))))
                               "\\l"))]
+    dot-data))
+
+(defn ^:private nomis-ns-graph* [project & args]
+  (let [options (make-options args)
+        {:keys [filename
+                platform
+                source-paths
+                show-non-project-deps
+                exclusions
+                write-gv-file?]} options
+        source-paths (or source-paths
+                         (case platform
+                           :clj (-> project
+                                    :source-paths)
+                           :cljs (let [assumed-cljs-source-paths ["src/cljs"
+                                                                  "cljs/src"]]
+                                   (lcm/info "Assuming cljs source paths ="
+                                             assumed-cljs-source-paths
+                                             "(you can override this with the :source-paths option).")
+                                   assumed-cljs-source-paths)))
+        ns-graph-spec {:platform              platform
+                       :source-paths          source-paths
+                       :exclusions            exclusions
+                       :show-non-project-deps show-non-project-deps
+                       :project-group         (:group project)
+                       :project-name          (:name project)}
+        dot-data (ns-graph-spec->dot-data ns-graph-spec)]
+    
     (when write-gv-file?
       (let [gv-filename (add-gv-extension filename)]
         (spit gv-filename
