@@ -1,6 +1,6 @@
-(ns leiningen.nomis-ns-graph.args-test
+(ns leiningen.nomis-ns-graph.p100-args-and-options.p100-args-test
   (:require [leiningen.lein-test-utils :as ltu]
-            [leiningen.nomis-ns-graph.args :refer :all]
+            [leiningen.nomis-ns-graph.p100-args-and-options.p100-args :refer :all]
             [midje.sweet :refer :all]))
 
 ;;;; ___________________________________________________________________________

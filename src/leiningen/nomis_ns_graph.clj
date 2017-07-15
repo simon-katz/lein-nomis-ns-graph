@@ -1,7 +1,7 @@
 (ns leiningen.nomis-ns-graph
-  (:require [leiningen.nomis-ns-graph.args :as args]
-            [leiningen.nomis-ns-graph.graph :as graph]
-            [leiningen.core.main :as lcm]
+  (:require [leiningen.core.main :as lcm]
+            [leiningen.nomis-ns-graph.p100-args-and-options.p100-args :as args]
+            [leiningen.nomis-ns-graph.p200-graphing.graph :as graph]
             [rhizome.viz :as viz]
             [slingshot.slingshot :refer [throw+ try+]])
   (:import [java.io PushbackReader]))

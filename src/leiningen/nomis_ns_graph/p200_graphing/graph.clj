@@ -1,4 +1,4 @@
-(ns leiningen.nomis-ns-graph.graph
+(ns leiningen.nomis-ns-graph.p200-graphing.graph
   (:require [clojure.java.io :as io]
             [clojure.set :as set]
             [clojure.string :as str]

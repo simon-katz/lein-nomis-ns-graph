@@ -1,4 +1,4 @@
-(ns leiningen.nomis-ns-graph.args
+(ns leiningen.nomis-ns-graph.p100-args-and-options.p100-args
   (:require [clojure.edn :as edn]
             [clojure.set :as set]
             [clojure.string :as str]

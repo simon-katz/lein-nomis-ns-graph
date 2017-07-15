@@ -1,7 +1,7 @@
-(ns leiningen.nomis-ns-graph.graph-test
+(ns leiningen.nomis-ns-graph.p200-graphing.graph-test
   (:require [clojure.java.io :as io]
             [leiningen.lein-test-utils :as ltu]
-            [leiningen.nomis-ns-graph.graph :as subject :refer :all]
+            [leiningen.nomis-ns-graph.p200-graphing.graph :as subject :refer :all]
             [midje.sweet :refer :all]))
 
 ;;;; ___________________________________________________________________________
