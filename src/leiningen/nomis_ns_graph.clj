@@ -1,39 +1,10 @@
 (ns leiningen.nomis-ns-graph
   (:require [leiningen.core.main :as lcm]
             [leiningen.nomis-ns-graph.p100-args-and-options.p100-args :as args]
+            [leiningen.nomis-ns-graph.p100-args-and-options.p200-options :as options]
             [leiningen.nomis-ns-graph.p200-graphing.graph :as graph]
             [rhizome.viz :as viz]
-            [slingshot.slingshot :refer [throw+ try+]])
-  (:import [java.io PushbackReader]))
-
-;;;; ___________________________________________________________________________
-
-(defn ^:private project-&-command-line-options->specs [project
-                                                       command-line-options]
-  (let [{:keys [platform
-                source-paths
-                show-non-project-deps
-                exclusions
-                filename
-                write-gv-file?]} command-line-options
-        source-paths (or source-paths
-                         (case platform
-                           :clj (-> project
-                                    :source-paths)
-                           :cljs (let [assumed-cljs-source-paths ["src/cljs"
-                                                                  "cljs/src"]]
-                                   (lcm/info "Assuming cljs source paths ="
-                                             assumed-cljs-source-paths
-                                             "(you can override this with the :source-paths option).")
-                                   assumed-cljs-source-paths)))]
-    {:ns-graph-spec {:platform              platform
-                     :source-paths          source-paths
-                     :exclusions            exclusions
-                     :show-non-project-deps show-non-project-deps
-                     :project-group         (:group project)
-                     :project-name          (:name project)}
-     :output-spec   {:filename filename
-                     :write-gv-file? write-gv-file?}}))
+            [slingshot.slingshot :refer [throw+ try+]]))
 
 ;;;; ___________________________________________________________________________
 
@@ -60,7 +31,7 @@
 (defn ^:private nomis-ns-graph* [project & args]
   (let [command-line-options (args/make-command-line-options args)
         {:keys [ns-graph-spec
-                output-spec]} (project-&-command-line-options->specs
+                output-spec]} (options/project-&-command-line-options->specs
                                project
                                command-line-options)
         dot-data (graph/ns-graph-spec->dot-data ns-graph-spec)]
