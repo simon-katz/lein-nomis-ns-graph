@@ -8,6 +8,7 @@
             ;; [clojure.tools.namespace.parse :as ctns-parse]
             [clojure.tools.namespace.track :as ctns-track]
             [leiningen.core.main :as lcm]
+            [leiningen.nomis-ns-graph.utils.utils :as u]
             [rhizome.dot :as dot]))
 
 ;;;; ___________________________________________________________________________
@@ -104,10 +105,15 @@
                                       {:label (ns-symbol->last-piece sym)
                                        :color color
                                        :fontcolor color})))
-        node->dependees #(filter include-node? (ctns-dep/immediate-dependencies dep-graph %)) 
+        node->dependees #(filter include-node? (ctns-dep/immediate-dependencies dep-graph %))
+        node->dependers (u/invert-non-injection node->dependees
+                                                nodes)
         node->has-dependees? (comp not
                                    empty?
                                    node->dependees)
+        node->has-dependers? (comp not
+                                   empty?
+                                   node->dependers)
         dot-data (dot/graph->dot
                   nodes
                   node->dependees
@@ -115,7 +121,8 @@
                   :edge->descriptor #(sym->style-map part-of-project?
                                                      %2)
                   :options {:dpi 72}
-                  :cluster->show-as-node? node->has-dependees?
+                  :cluster->show-as-node? #(or (node->has-dependees? %)
+                                               (node->has-dependers? %))
                   :cluster->descriptor #(symbol->descriptor %
                                                             (case 1 ; for easy dev/debug
                                                               1 :blue
