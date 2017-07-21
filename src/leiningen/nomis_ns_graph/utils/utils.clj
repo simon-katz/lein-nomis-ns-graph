@@ -8,8 +8,7 @@
   `f` takes elements of `domain-subset` (and possibly other values, not
   relevant here) as argument, and returns a single value.
   For explanations of terminology, see:
-    https://www.mathsisfun.com/sets/domain-range-codomain.html
-    https://www.mathsisfun.com/sets/injective-surjective-bijective.html"
+    https://www.mathsisfun.com/sets/domain-range-codomain.html"
   (dissoc (group-by f domain-subset)
           nil))
 
@@ -18,8 +17,7 @@
   `rel` takes elements of `domain-subset` (and possibly other values, not
   relevant here) as argument, and returns a collection of values.
   For explanations of terminology, see:
-    https://www.mathsisfun.com/sets/domain-range-codomain.html
-    https://www.mathsisfun.com/sets/injective-surjective-bijective.html"
+    https://www.mathsisfun.com/sets/domain-range-codomain.html"
   (let [domain-range-pairs (for [d domain-subset
                                  r (rel d)]
                              [d r])]
