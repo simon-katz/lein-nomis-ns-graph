@@ -106,8 +106,8 @@
                                        :color color
                                        :fontcolor color})))
         node->dependees #(filter include-node? (ctns-dep/immediate-dependencies dep-graph %))
-        node->dependers (u/invert-non-injection node->dependees
-                                                nodes)
+        node->dependers (u/invert-relation node->dependees
+                                           nodes)
         node->has-dependees? (comp not
                                    empty?
                                    node->dependees)
