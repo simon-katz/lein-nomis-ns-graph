@@ -20,7 +20,7 @@
   For explanations of terminology, see:
     https://www.mathsisfun.com/sets/domain-range-codomain.html
     https://www.mathsisfun.com/sets/injective-surjective-bijective.html"
-  (let [range-domain-pairs (for [d domain-subset
+  (let [domain-range-pairs (for [d domain-subset
                                  r (rel d)]
                              [d r])]
     (reduce (fn [sofar [d r]]
@@ -29,4 +29,4 @@
                       (fnil conj [])
                       d))
             {}
-            range-domain-pairs)))
+            domain-range-pairs)))
