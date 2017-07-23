@@ -99,6 +99,17 @@ extension.
 The Graphviz dot file format is a text format, so this is useful when developing
 and debugging.
 
+## New Features
+
+The features documented in this section are not yet released.
+
+They may or may not be in the latest snapshot version.
+(You could check https://clojars.org/lein-nomis-ns-graph for the latest
+snapshot version.)
+
+### Nothing here yet
+
+
 ## Acknowledgments
 
 Inspired by the following:
