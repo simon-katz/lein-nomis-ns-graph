@@ -98,6 +98,17 @@
                                 sym))))
         leaf-nodes (filter include-node? (ctns-dep/nodes dep-graph))
         nodes (ns-symbols->all-ns-symbols leaf-nodes)
+        node->self-and-children (reduce
+                                 (fn [sofar [n p]]
+                                   (update sofar
+                                           p
+                                           (fnil conj [])
+                                           n))
+                                 {}
+                                 (for [n leaf-nodes
+                                       p (ns-symbol->all-parent-ns-symbols-incl-self
+                                          n)]
+                                   [n p]))
         symbol->descriptor (fn [sym color]
                              (let [color color]
                                (merge (sym->style-map part-of-project?
@@ -115,7 +126,11 @@
                                    empty?
                                    node->dependers)
         dot-data (dot/graph->dot
-                  nodes
+                  (filter (fn [n]
+                            (or (part-of-project? n)
+                                (some node->has-dependers?
+                                      (node->self-and-children n))))
+                          nodes)
                   node->dependees
                   :node->descriptor #(symbol->descriptor % :black)
                   :edge->descriptor #(sym->style-map part-of-project?

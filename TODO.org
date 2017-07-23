@@ -2,7 +2,13 @@
 ** This means using the `rhizome.dot` ns
 * DONE Tests for the generated dot stuff
 * TODO Tidy the code
-* TODO Don't show non-project dependees whose dependers are excluded
+* DONE Don't show non-project dependees whose dependers are excluded
+** This is equivalent to:
+*** Don't show non-project nodes that have no dependers
+* TODO Some or all of these (need to think about the details):
+** TODO Option to exclude nodes whose dependers are excluded
+*** (these will be project nodes)
+** TODO Option to exclude nodes that have no dependers or dependees
 * TODO Bug: If there are namespaces x.y and x.y.z
 ** If x.y is a depender, it gets displayed with an internal name
 *** Done -- but needs tests

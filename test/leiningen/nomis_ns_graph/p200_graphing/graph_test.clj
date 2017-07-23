@@ -46,11 +46,12 @@
          actual-file-name] [(str expected-file-name-base "-expected.gv")
                             (str expected-file-name-base "-actual.gv")]]
     (let [dot-data (ns-graph-spec->dot-data ns-graph-spec)]
-      (when (or (not (.exists (io/file actual-file-name)))
-                (not= dot-data
-                      (slurp actual-file-name)))
-        ;; Take care to only do this when necessary, so that diff tools
-        ;; don't show unnecessary diffs.
+      (when
+          ;; Take care to only do this when necessary, so that diff tools
+          ;; don't show unnecessary diffs.
+          (or (not (.exists (io/file actual-file-name)))
+              (not= dot-data
+                    (slurp actual-file-name)))
         (spit actual-file-name
               dot-data))
       (fact (slurp expected-file-name)
