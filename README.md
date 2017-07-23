@@ -81,14 +81,6 @@ Namespaces are not shown if they start with any of the supplied strings.
 As for source paths, the separator for the source paths can be a vertical bar
 (|).
 
-## New Features
-
-The features documented in this section are not yet released.
-
-They may or may not be in the latest snapshot version.
-(You could check https://clojars.org/lein-nomis-ns-graph for the latest
-snapshot version.)
-
 ### Writing a .gv File
 
 To write a `.gv` file:
