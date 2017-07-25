@@ -1,5 +1,5 @@
 digraph {
-graph[dpi=72, rankdir=TP]
+graph[dpi=300, rankdir=TP]
 node[fontname="Monospace"]
 edge[fontname="Monospace"]
 

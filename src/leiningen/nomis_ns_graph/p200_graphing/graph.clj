@@ -135,7 +135,7 @@
                   :node->descriptor #(symbol->descriptor % :black)
                   :edge->descriptor #(sym->style-map part-of-project?
                                                      %2)
-                  :options {:dpi 72}
+                  :options {:dpi 300}
                   :cluster->show-as-node? #(or (node->has-dependees? %)
                                                (node->has-dependers? %))
                   :cluster->descriptor #(symbol->descriptor %
