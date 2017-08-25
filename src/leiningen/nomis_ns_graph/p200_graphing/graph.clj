@@ -84,18 +84,15 @@
                            source-files))
         ns-names-with-parents (ns-symbols->all-ns-symbols ns-names)
         part-of-project? (partial contains? ns-names-with-parents)
+        node-satisfies-project-constraints? (fn [sym]
+                                              (or (part-of-project? sym)
+                                                  show-non-project-deps))
+        node-excluded-by-user? (fn [sym]
+                                 (some #(str/starts-with? sym %)
+                                       exclusions))
         include-node? (fn [sym]
-                        (let [exclusion-fns (for [s exclusions]
-                                              #(str/starts-with? % s))
-                              extra-exclusion-fn (comp
-                                                  not
-                                                  (if show-non-project-deps
-                                                    (constantly true)
-                                                    part-of-project?))
-                              exclusions+ (cons extra-exclusion-fn
-                                                exclusion-fns)]
-                          (not ((apply some-fn exclusions+)
-                                sym))))
+                        (and (node-satisfies-project-constraints? sym)
+                             (not (node-excluded-by-user? sym))))
         leaf-nodes (filter include-node? (ctns-dep/nodes dep-graph))
         nodes (ns-symbols->all-ns-symbols leaf-nodes)
         node->self-and-children (reduce
