@@ -17,10 +17,9 @@
 
 (fact
   (ltu/with-ignore-logging []
-   (project-&-command-line-options->specs the-project
-                                          (assoc options-for-augmentation
-                                                 :platform :clj
-                                                 :source-paths nil)))
+    (project-&-command-line-options->specs the-project
+                                           (assoc options-for-augmentation
+                                                  :platform :clj)))
   =>
   {:ns-graph-spec {:platform              :clj
                    :source-paths          ["the" "project" "source" "paths"]
@@ -56,8 +55,7 @@
   (ltu/with-ignore-logging []
     (project-&-command-line-options->specs the-project
                                            (assoc options-for-augmentation
-                                                  :platform :cljs
-                                                  :source-paths nil)))
+                                                  :platform :cljs)))
   =>
   {:ns-graph-spec {:platform              :cljs
                    :source-paths          ["src/cljs" "cljs/src"]
