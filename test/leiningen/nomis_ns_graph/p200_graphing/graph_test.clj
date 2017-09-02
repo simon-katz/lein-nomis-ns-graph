@@ -64,7 +64,6 @@
     :source-paths          ["test-resources/example-projects/nomisdraw/dev"
                             "test-resources/example-projects/nomisdraw/src/clj"]
     :exclusions            ["user" "midje"]
-    :show-non-project-deps false
     :project-group         "nomisdraw"
     :project-name          "nomisdraw"}))
 
@@ -85,8 +84,6 @@
    {:platform              :cljs
     :source-paths          ["test-resources/example-projects/nomisdraw/src/cljs"
                             "test-resources/example-projects/nomisdraw/cljs/src"]
-    :exclusions            nil
-    :show-non-project-deps false
     :project-group         "nomisdraw"
     :project-name          "nomisdraw"}))
 
@@ -96,7 +93,6 @@
    {:platform              :cljs
     :source-paths          ["test-resources/example-projects/nomisdraw/src/cljs"
                             "test-resources/example-projects/nomisdraw/cljs/src"]
-    :exclusions            nil
     :show-non-project-deps true
     :project-group         "nomisdraw"
     :project-name          "nomisdraw"}))
@@ -108,6 +104,5 @@
     :source-paths          ["test-resources/example-projects/nomisdraw/dev"
                             "test-resources/example-projects/nomisdraw/src/clj"]
     :exclusions-re         "u.er|\\.sys"
-    :show-non-project-deps false
     :project-group         "nomisdraw"
     :project-name          "nomisdraw"}))

@@ -1,6 +1,4 @@
 * TODO Change `check-graphing` tests to mostly not have exclusions
-* TODO Maybe `make-command-line-options` should return smaller maps
-** Maybe for nil and false, don't need an entry
 * TODO Use `select-keys` in `project-&-command-line-options->specs`
 * TODO Maybe, in `options-for-printing->options`, change `:exclusions-re`
 ** to `:exclusions-re-string`

@@ -43,6 +43,11 @@
         edn/read-string
         boolean)))
 
+(defn ^:private remove-nils-and-falses [m]
+  (into {}
+        (for [[k v] m]
+          (when v [k v]))))
+
 (defn ^:private raw-options->options-for-printing [raw-options]
   ;; Transform into user-oriented printable Clojure data.
   (let [{filename-raw              :filename
@@ -57,23 +62,24 @@
       (throw+ {:type :nomis-ns-graph/exception
                :message (str "Bad platform: "
                              platform-raw)}))
-    {:platform              (or platform-raw
-                                "clj")
-     :source-paths          (if source-paths-raw
-                              (str/split source-paths-raw
-                                         #" |\|")
-                              nil)
-     :show-non-project-deps (boolean-ify show-non-project-deps-raw)
-     :exclusions            (if exclusions-raw
-                              (str/split exclusions-raw
-                                         #" |\|")
-                              nil)
-     :exclusions-re         (if exclusions-re-raw
-                              exclusions-re-raw
-                              nil)
-     :filename              (or filename-raw
-                                "nomis-ns-graph")
-     :write-gv-file?        (boolean-ify write-gv-file?-raw)}))
+    (let [m {:platform              (or platform-raw
+                                        "clj")
+             :source-paths          (if source-paths-raw
+                                      (str/split source-paths-raw
+                                                 #" |\|")
+                                      nil)
+             :show-non-project-deps (boolean-ify show-non-project-deps-raw)
+             :exclusions            (if exclusions-raw
+                                      (str/split exclusions-raw
+                                                 #" |\|")
+                                      nil)
+             :exclusions-re         (if exclusions-re-raw
+                                      exclusions-re-raw
+                                      nil)
+             :filename              (or filename-raw
+                                        "nomis-ns-graph")
+             :write-gv-file?        (boolean-ify write-gv-file?-raw)}]
+      (remove-nils-and-falses m))))
 
 ;;;; ___________________________________________________________________________
 
