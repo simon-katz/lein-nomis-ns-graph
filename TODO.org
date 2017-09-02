@@ -1,5 +1,4 @@
 * TODO Change `check-graphing` tests to mostly not have exclusions
-* TODO Use `select-keys` in `project-&-command-line-options->specs`
 * TODO Maybe, in `options-for-printing->options`, change `:exclusions-re`
 ** to `:exclusions-re-string`
 * TODO New function: `spit-if-new-content`
