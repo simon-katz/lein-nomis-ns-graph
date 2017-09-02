@@ -66,6 +66,7 @@
 (defn ns-graph-spec->dot-data [{:keys [platform
                                        source-paths
                                        exclusions
+                                       exclusions-re
                                        show-non-project-deps
                                        project-group
                                        project-name]
@@ -88,8 +89,11 @@
                                               (or (part-of-project? sym)
                                                   show-non-project-deps))
         node-excluded-by-user? (fn [sym]
-                                 (some #(str/starts-with? sym %)
-                                       exclusions))
+                                 (or (some #(str/starts-with? sym %)
+                                           exclusions)
+                                     (when exclusions-re
+                                       (re-find (re-pattern exclusions-re)
+                                                (name sym)))))
         include-node? (fn [sym]
                         (and (node-satisfies-project-constraints? sym)
                              (not (node-excluded-by-user? sym))))
@@ -161,6 +165,8 @@
                                                                                "")))))))
                               (when show-non-project-deps 
                                 "\\l:show-non-project-deps true")
+                              (when-not (nil? exclusions-re)
+                                (str "\\l:exclusions-re: " exclusions-re))
                               (when-not (empty? exclusions)
                                 (str "\\l:exclusions:\\l"
                                      (apply str

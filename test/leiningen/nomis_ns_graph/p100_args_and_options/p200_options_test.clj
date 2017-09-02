@@ -11,6 +11,7 @@
 (def options-for-augmentation
   {:show-non-project-deps "the-show-non-project-deps"
    :exclusions            "the-exclusions"
+   :exclusions-re         "the-exclusions-re"
    :filename              "the-filename"
    :write-gv-file?        "the-write-gv-file?"})
 
@@ -24,6 +25,7 @@
   {:ns-graph-spec {:platform              :clj
                    :source-paths          ["the" "project" "source" "paths"]
                    :exclusions            "the-exclusions"
+                   :exclusions-re         "the-exclusions-re"
                    :show-non-project-deps "the-show-non-project-deps"
                    :project-group         "the-group"
                    :project-name          "the-name"}
@@ -43,6 +45,7 @@
   {:ns-graph-spec {:platform              :clj
                    :source-paths          ["the" "specs" "source" "paths"]
                    :exclusions            "the-exclusions"
+                   :exclusions-re         "the-exclusions-re"
                    :show-non-project-deps "the-show-non-project-deps"
                    :project-group         "the-group"
                    :project-name          "the-name"}
@@ -59,6 +62,7 @@
   {:ns-graph-spec {:platform              :cljs
                    :source-paths          ["src/cljs" "cljs/src"]
                    :exclusions            "the-exclusions"
+                   :exclusions-re         "the-exclusions-re"
                    :show-non-project-deps "the-show-non-project-deps"
                    :project-group         "the-group"
                    :project-name          "the-name"}
@@ -78,6 +82,7 @@
   {:ns-graph-spec {:platform              :cljs
                    :source-paths          ["the" "specs" "source" "paths"]
                    :exclusions            "the-exclusions"
+                   :exclusions-re         "the-exclusions-re"
                    :show-non-project-deps "the-show-non-project-deps"
                    :project-group         "the-group"
                    :project-name          "the-name"}

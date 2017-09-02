@@ -9,6 +9,7 @@
                 source-paths
                 show-non-project-deps
                 exclusions
+                exclusions-re
                 filename
                 write-gv-file?]} command-line-options
         source-paths (or source-paths
@@ -24,6 +25,7 @@
     {:ns-graph-spec {:platform              platform
                      :source-paths          source-paths
                      :exclusions            exclusions
+                     :exclusions-re         exclusions-re
                      :show-non-project-deps show-non-project-deps
                      :project-group         (:group project)
                      :project-name          (:name project)}

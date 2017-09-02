@@ -13,6 +13,7 @@
     :source-paths
     :show-non-project-deps
     :exclusions
+    :exclusions-re
     :write-gv-file?})
 
 (defn ^:private command-line-args->raw-options [command-line-args]
@@ -49,6 +50,7 @@
          source-paths-raw          :source-paths
          show-non-project-deps-raw :show-non-project-deps
          exclusions-raw            :exclusions
+         exclusions-re-raw         :exclusions-re
          write-gv-file?-raw        :write-gv-file?} raw-options]
     (when-not (or (nil? platform-raw)
                   (#{"clj" "cljs"} platform-raw))
@@ -65,6 +67,9 @@
      :exclusions            (if exclusions-raw
                               (str/split exclusions-raw
                                          #" |\|")
+                              nil)
+     :exclusions-re         (if exclusions-re-raw
+                              exclusions-re-raw
                               nil)
      :filename              (or filename-raw
                                 "nomis-ns-graph")

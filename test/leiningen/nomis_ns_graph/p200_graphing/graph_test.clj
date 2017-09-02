@@ -48,7 +48,7 @@
     (let [dot-data (ns-graph-spec->dot-data ns-graph-spec)]
       (when
           ;; Take care to only do this when necessary, so that diff tools
-          ;; don't show unnecessary diffs.
+          ;; don't show unnecessary diffs in file timestamps.
           (or (not (.exists (io/file actual-file-name)))
               (not= dot-data
                     (slurp actual-file-name)))
@@ -98,5 +98,16 @@
                             "test-resources/example-projects/nomisdraw/cljs/src"]
     :exclusions            nil
     :show-non-project-deps true
+    :project-group         "nomisdraw"
+    :project-name          "nomisdraw"}))
+
+(fact "exclusions-re"
+  (check-graphing
+   "nomis-ns-graph-clj-with-exclusions-re"
+   {:platform              :clj
+    :source-paths          ["test-resources/example-projects/nomisdraw/dev"
+                            "test-resources/example-projects/nomisdraw/src/clj"]
+    :exclusions-re         "u.er|\\.sys"
+    :show-non-project-deps false
     :project-group         "nomisdraw"
     :project-name          "nomisdraw"}))

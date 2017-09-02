@@ -16,6 +16,7 @@
      :source-paths nil
      :show-non-project-deps false
      :exclusions nil
+     :exclusions-re nil
      :write-gv-file? false})
 
   (fact "filename"
@@ -27,6 +28,7 @@
      :source-paths nil
      :show-non-project-deps false
      :exclusions nil
+     :exclusions-re nil
      :write-gv-file? false})
 
   (fact "platform :clj"
@@ -38,6 +40,7 @@
      :source-paths nil
      :show-non-project-deps false
      :exclusions nil
+     :exclusions-re nil
      :write-gv-file? false})
 
   (fact "source paths"
@@ -49,6 +52,7 @@
      :source-paths ["a/b" "c/d" "e/f"]
      :show-non-project-deps false
      :exclusions nil
+     :exclusions-re nil
      :write-gv-file? false})
 
   (fact "platform :cljs"
@@ -60,6 +64,7 @@
      :source-paths nil
      :show-non-project-deps false
      :exclusions nil
+     :exclusions-re nil
      :write-gv-file? false})
 
   (fact "show-non-project-deps"
@@ -71,6 +76,7 @@
      :source-paths nil
      :show-non-project-deps true
      :exclusions nil
+     :exclusions-re nil
      :write-gv-file? false})
 
   (fact "show-non-project-deps yeah-man"
@@ -82,6 +88,7 @@
      :source-paths nil
      :show-non-project-deps true
      :exclusions nil
+     :exclusions-re nil
      :write-gv-file? false})
 
   (fact "show-non-project-deps false"
@@ -93,6 +100,7 @@
      :source-paths nil
      :show-non-project-deps false
      :exclusions nil
+     :exclusions-re nil
      :write-gv-file? false})
 
   (fact "exclusions a"
@@ -104,6 +112,7 @@
      :source-paths nil
      :show-non-project-deps false
      :exclusions ["a"]
+     :exclusions-re nil
      :write-gv-file? false})
 
   (fact "exclusions a b"
@@ -115,6 +124,7 @@
      :source-paths nil
      :show-non-project-deps false
      :exclusions ["a" "b"]
+     :exclusions-re nil
      :write-gv-file? false})
 
   (fact "exclusions a|b"
@@ -126,6 +136,19 @@
      :source-paths nil
      :show-non-project-deps false
      :exclusions ["a" "b"]
+     :exclusions-re nil
+     :write-gv-file? false})
+
+  (fact "exclusions-re a|b"
+    (ltu/with-ignore-logging []
+      (make-command-line-options [":exclusions-re" "a|b"]))
+    =>
+    {:filename "nomis-ns-graph"
+     :platform :clj
+     :source-paths nil
+     :show-non-project-deps false
+     :exclusions nil
+     :exclusions-re "a|b"
      :write-gv-file? false})
 
   (fact "write-gv-file?"
@@ -137,4 +160,5 @@
      :source-paths nil
      :show-non-project-deps false
      :exclusions nil
+     :exclusions-re nil
      :write-gv-file? true}))

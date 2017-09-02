@@ -1,3 +1,11 @@
+* TODO Change `check-graphing` tests to mostly not have exclusions
+* TODO Maybe `make-command-line-options` should return smaller maps
+** Maybe for nil and false, don't need an entry
+* TODO Use `select-keys` in `project-&-command-line-options->specs`
+* TODO Maybe, in `options-for-printing->options`, change `:exclusions-re`
+** to `:exclusions-re-string`
+* TODO New function: `spit-if-new-content`
+  [[file:~/development-100/repositories/nomis/_apps-and-libs/lein-nomis-ns-graph/test/leiningen/nomis_ns_graph/p200_graphing/graph_test.clj::(defn%20check-graphing%20%5Bfilename][file:~/development-100/repositories/nomis/_apps-and-libs/lein-nomis-ns-graph/test/leiningen/nomis_ns_graph/p200_graphing/graph_test.clj::(defn check-graphing [filename]]
 * DONE Option to print the dot stuff
 ** This means using the `rhizome.dot` ns
 * DONE Tests for the generated dot stuff

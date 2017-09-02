@@ -74,9 +74,9 @@ To show one level of dependencies going to namespaces outside of your project:
 
     lein nomis-ns-graph :show-non-project-deps
 
-### Exclusions
+### Exclusions using a Prefix
 
-To exclude namespaces:
+To exclude namespaces using a prefix:
 
     lein nomis-ns-graph :exclusions "user timbre"
 
@@ -84,6 +84,24 @@ Namespaces are not shown if they start with any of the supplied strings.
 
 As for source paths, the separator for the source paths can be a vertical bar
 (|).
+
+#### Example
+
+For a namespace named `aaa.bbb.ccc`, the following strings would all match
+and no other strings would match:
+
+* aaa.bbb.ccc
+* aaa.bbb.cc
+* aaa.bbb.c
+* aaa.bbb.
+* aaa.bbb
+* aaa.bb
+* aaa.b
+* aaa.
+* aaa
+* aa
+* a
+
 
 ### Writing a .gv File
 
@@ -111,7 +129,21 @@ They may or may not be in the latest snapshot version.
 (You could check https://clojars.org/lein-nomis-ns-graph for the latest
 snapshot version.)
 
-### Nothing here yet
+### Exclusions using a Regex
+
+To exclude namespaces using a regex:
+
+    lein nomis-ns-graph :exclusions-re "^my-prefix|\.my-ns-section\.|my-any-section"
+
+
+#### Example
+
+For a namespace named `aaa.bbb.ccc`, the following regular expressions would all
+match:
+
+* \^a
+* \\.bbb\\.
+* b
 
 
 ## Acknowledgments
