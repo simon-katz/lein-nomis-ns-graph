@@ -16,6 +16,7 @@
 ;;;; "nsn" means "ns-name".
 
 ;;;; ___________________________________________________________________________
+;;;; Domain stuff
 
 (defn ^:private nsn->pieces [nsn]
   (as-> nsn __
@@ -113,6 +114,9 @@
                                      exclusions-re
                                      nsn)))))
 
+;;;; ___________________________________________________________________________
+;;;; Make dot data
+
 (defn ^:private ns-graph-spec->title-dot-data [{:keys [platform
                                                        source-paths
                                                        exclusions
@@ -189,6 +193,9 @@
                     :cluster->parent nsn->parent-nsn
                     :left-justify-cluster-labels? true
                     :title (ns-graph-spec->title-dot-data ns-graph-spec))))
+
+;;;; ___________________________________________________________________________
+;;;; Glue it all together
 
 (defn ns-graph-spec->dot-data [{:keys [platform
                                        source-paths
