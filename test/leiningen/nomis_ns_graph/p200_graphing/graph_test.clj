@@ -63,13 +63,12 @@
    {:platform              :clj
     :source-paths          ["test-resources/example-projects/nomisdraw/dev"
                             "test-resources/example-projects/nomisdraw/src/clj"]
-    :exclusions            ["user" "midje"]
     :project-group         "nomisdraw"
     :project-name          "nomisdraw"}))
 
-(fact "clj-with-externals"
+(fact "clj-with-exclusions-and-externals"
   (check-graphing
-   "nomis-ns-graph-clj-with-externals"
+   "nomis-ns-graph-clj-with-exclusions-and-externals"
    {:platform              :clj
     :source-paths          ["test-resources/example-projects/nomisdraw/dev"
                             "test-resources/example-projects/nomisdraw/src/clj"]
@@ -97,7 +96,7 @@
     :project-group         "nomisdraw"
     :project-name          "nomisdraw"}))
 
-(fact "exclusions-re"
+(fact "clj-with-exclusions-re"
   (check-graphing
    "nomis-ns-graph-clj-with-exclusions-re"
    {:platform              :clj
