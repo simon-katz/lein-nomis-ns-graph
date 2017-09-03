@@ -13,24 +13,28 @@
 
 ;;;; ___________________________________________________________________________
 
-(defn ^:private ns-symbol->pieces [sym]
-  (as-> sym __
+;;;; "nsn" means "ns-name".
+
+;;;; ___________________________________________________________________________
+
+(defn ^:private nsn->pieces [nsn]
+  (as-> nsn __
     (name __)
     (str/split __ #"\.")
     (map symbol __)))
 
-(defn ^:private ns-symbol->last-piece [sym]
-  (-> sym
-      ns-symbol->pieces
+(defn ^:private nsn->last-piece [nsn]
+  (-> nsn
+      nsn->pieces
       last))
 
-(defn ^:private pieces->ns-symbol [pieces]
+(defn ^:private pieces->nsn [pieces]
   (->> pieces
        (str/join ".")
        symbol))
 
-(defn ^:private ns-symbol->parent-ns-symbol [sym]
-  (as-> sym __
+(defn ^:private nsn->parent-nsn [nsn]
+  (as-> nsn __
     (name __)
     (str/split __ #"\.")
     (butlast __)
@@ -39,27 +43,27 @@
       nil
       (symbol __))))
 
-(defn ^:private ns-symbol->all-parent-ns-symbols-incl-self [sym]
-  (as-> sym __
+(defn ^:private nsn->all-parent-nsns-incl-self [nsn]
+  (as-> nsn __
     (name __)
     (str/split __ #"\.")
     (iterate butlast __)
     (take-while (comp not nil?)
                 __)
-    (map pieces->ns-symbol __)))
+    (map pieces->nsn __)))
 
-(defn ^:private ns-symbols->all-ns-symbols [ns-names]
+(defn ^:private nsns->all-nsns [nsns]
   (apply set/union
-         (map (comp set ns-symbol->all-parent-ns-symbols-incl-self)
-              ns-names)))
+         (map (comp set nsn->all-parent-nsns-incl-self)
+              nsns)))
 
 (defn ^:private dups [seq]
   (for [[id freq] (frequencies seq)
         :when (> freq 1)]
     id))
 
-(defn ^:private sym->style-map [node->part-of-project? sym]
-  {:style (if (node->part-of-project? sym)
+(defn ^:private nsn->style-map [nsn->part-of-project? nsn]
+  {:style (if (nsn->part-of-project? nsn)
             :solid
             :dashed)})
 
@@ -78,43 +82,41 @@
   (let [tracker (ctns-file/add-files {} source-files)]
     (tracker ::ctns-track/deps)))
 
-(defn ^:private source-files->ns-names [source-files]
+(defn ^:private source-files->nsns [source-files]
   (set (map (comp second ctns-file/read-file-ns-decl)
             source-files)))
 
-(defn  ^:private leaf-nodes->node->self-and-children [leaf-nodes]
+(defn  ^:private leaf-nsns->nsn->self-and-children [leaf-nsns]
   (reduce (fn [sofar [n p]]
             (update sofar
                     p
                     (fnil conj [])
                     n))
           {}
-          (for [n leaf-nodes
-                p (ns-symbol->all-parent-ns-symbols-incl-self
+          (for [n leaf-nsns
+                p (nsn->all-parent-nsns-incl-self
                    n)]
             [n p])))
 
-(defn ^:private node-excluded-by-user? [exclusions
-                                        exclusions-re
-                                        sym]
-  (or (some #(str/starts-with? sym %)
+(defn ^:private nsn-excluded-by-user? [exclusions
+                                       exclusions-re
+                                       nsn]
+  (or (some #(str/starts-with? nsn %)
             exclusions)
       (when exclusions-re
         (re-find (re-pattern exclusions-re)
-                 (name sym)))))
+                 (name nsn)))))
 
-(defn ^:private make-include-node?-fun [node->part-of-project?
-                                        exclusions
-                                        exclusions-re
-                                        show-non-project-deps]
-  (fn [sym]
-    (let [node-satisfies-project-constraints? (fn [sym]
-                                                (or (node->part-of-project? sym)
-                                                    show-non-project-deps))]
-      (and (node-satisfies-project-constraints? sym)
-           (not (node-excluded-by-user? exclusions
-                                        exclusions-re
-                                        sym))))))
+(defn ^:private make-include-nsn?-fun [nsn->part-of-project?
+                                       exclusions
+                                       exclusions-re
+                                       show-non-project-deps]
+  (fn [nsn]
+    (and (or (nsn->part-of-project? nsn)
+             show-non-project-deps)
+         (not (nsn-excluded-by-user? exclusions
+                                     exclusions-re
+                                     nsn)))))
 
 (defn ^:private ns-graph-spec->title-dot-data [{:keys [platform
                                                        source-paths
@@ -152,37 +154,37 @@
                                     exclusions)))))
        "\\l"))
 
-(defn ^:private make-symbol->descriptor-fun [node->part-of-project?]
-  (fn [sym color]
-    (merge (sym->style-map node->part-of-project?
-                           sym)
-           {:label (ns-symbol->last-piece sym)
+(defn ^:private make-nsn->descriptor-fun [nsn->part-of-project?]
+  (fn [nsn color]
+    (merge (nsn->style-map nsn->part-of-project?
+                           nsn)
+           {:label (nsn->last-piece nsn)
             :color color
             :fontcolor color})))
 
-(defn ^:private much-stuff->dot [nodes-to-show
-                                 node->dependees
-                                 node->part-of-project?
-                                 node->has-dependees?
-                                 node->has-dependers?
+(defn ^:private much-stuff->dot [nsns-to-show
+                                 nsn->dependees
+                                 nsn->part-of-project?
+                                 nsn->has-dependees?
+                                 nsn->has-dependers?
                                  ns-graph-spec]
-  (let [symbol->descriptor-fun (-> node->part-of-project?
-                                   make-symbol->descriptor-fun)]
-    (dot/graph->dot nodes-to-show
-                    node->dependees
-                    :node->descriptor #(symbol->descriptor-fun % :black)
-                    :edge->descriptor #(sym->style-map node->part-of-project?
+  (let [nsn->descriptor-fun (-> nsn->part-of-project?
+                                make-nsn->descriptor-fun)]
+    (dot/graph->dot nsns-to-show
+                    nsn->dependees
+                    :node->descriptor #(nsn->descriptor-fun % :black)
+                    :edge->descriptor #(nsn->style-map nsn->part-of-project?
                                                        %2)
                     :options {:dpi 300}
-                    :cluster->show-as-node? #(or (node->has-dependees? %)
-                                                 (node->has-dependers? %))
-                    :cluster->descriptor #(symbol->descriptor-fun %
-                                                                  (case 1 ; for easy dev/debug
-                                                                    1 :blue
-                                                                    2 :red
-                                                                    3 :purple))
-                    :node->cluster ns-symbol->parent-ns-symbol
-                    :cluster->parent ns-symbol->parent-ns-symbol
+                    :cluster->show-as-node? #(or (nsn->has-dependees? %)
+                                                 (nsn->has-dependers? %))
+                    :cluster->descriptor #(nsn->descriptor-fun %
+                                                               (case 1 ; for easy dev/debug
+                                                                 1 :blue
+                                                                 2 :red
+                                                                 3 :purple))
+                    :node->cluster nsn->parent-nsn
+                    :cluster->parent nsn->parent-nsn
                     :left-justify-cluster-labels? true
                     :title (ns-graph-spec->title-dot-data ns-graph-spec))))
 
@@ -194,42 +196,42 @@
                                        project-group
                                        project-name]
                                 :as ns-graph-spec}]
-  (let [source-files            (compute-source-files platform
-                                                      source-paths)
-        dep-graph               (source-files->dep-graph source-files)
-        ns-names-with-parents   (-> source-files
-                                    source-files->ns-names
-                                    ns-symbols->all-ns-symbols) 
-        node->part-of-project?  (partial contains? ns-names-with-parents)
-        include-node?-fun       (make-include-node?-fun node->part-of-project?
-                                                        exclusions
-                                                        exclusions-re
-                                                        show-non-project-deps)
-        leaf-nodes              (filter include-node?-fun
-                                        (ctns-dep/nodes dep-graph))
-        nodes                   (ns-symbols->all-ns-symbols leaf-nodes)
-        node->self-and-children (leaf-nodes->node->self-and-children leaf-nodes)
-        node->dependees         #(filter include-node?-fun
-                                         (ctns-dep/immediate-dependencies
-                                          dep-graph
-                                          %))
-        node->dependers         (u/invert-relation node->dependees
-                                                   nodes)
-        node->has-dependees?    (comp not
-                                      empty?
-                                      node->dependees)
-        node->has-dependers?    (comp not
-                                      empty?
-                                      node->dependers)
-        nodes-to-show           (filter (fn [n]
-                                          (or (node->part-of-project? n)
-                                              (some node->has-dependers?
-                                                    (node->self-and-children n))))
-                                        nodes)
-        dot-data                (much-stuff->dot nodes-to-show
-                                                 node->dependees
-                                                 node->part-of-project?
-                                                 node->has-dependees?
-                                                 node->has-dependers?
-                                                 ns-graph-spec)]
+  (let [source-files           (compute-source-files platform
+                                                     source-paths)
+        dep-graph              (source-files->dep-graph source-files)
+        nsns-with-parents      (-> source-files
+                                   source-files->nsns
+                                   nsns->all-nsns) 
+        nsn->part-of-project?  (partial contains? nsns-with-parents)
+        include-nsn?-fun       (make-include-nsn?-fun nsn->part-of-project?
+                                                      exclusions
+                                                      exclusions-re
+                                                      show-non-project-deps)
+        leaf-nsns              (filter include-nsn?-fun
+                                       (ctns-dep/nodes dep-graph))
+        nsns                   (nsns->all-nsns leaf-nsns)
+        nsn->self-and-children (leaf-nsns->nsn->self-and-children leaf-nsns)
+        nsn->dependees         #(filter include-nsn?-fun
+                                        (ctns-dep/immediate-dependencies
+                                         dep-graph
+                                         %))
+        nsn->dependers         (u/invert-relation nsn->dependees
+                                                  nsns)
+        nsn->has-dependees?    (comp not
+                                     empty?
+                                     nsn->dependees)
+        nsn->has-dependers?    (comp not
+                                     empty?
+                                     nsn->dependers)
+        nsns-to-show           (filter (fn [n]
+                                         (or (nsn->part-of-project? n)
+                                             (some nsn->has-dependers?
+                                                   (nsn->self-and-children n))))
+                                       nsns)
+        dot-data               (much-stuff->dot nsns-to-show
+                                                nsn->dependees
+                                                nsn->part-of-project?
+                                                nsn->has-dependees?
+                                                nsn->has-dependers?
+                                                ns-graph-spec)]
     dot-data))
