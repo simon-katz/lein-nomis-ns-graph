@@ -62,11 +62,6 @@
         :when (> freq 1)]
     id))
 
-(defn ^:private nsn->style-map [nsn->part-of-project? nsn]
-  {:style (if (nsn->part-of-project? nsn)
-            :solid
-            :dashed)})
-
 (defn ^:private compute-source-files [platform
                                       source-paths]
   (let [platform-for-ctns (case platform
@@ -154,10 +149,16 @@
                                     exclusions)))))
        "\\l"))
 
+(defn ^:private part-of-project?->style-map [part-of-project?]
+  {:style (if part-of-project?
+            :solid
+            :dashed)})
+
 (defn ^:private make-nsn->descriptor-fun [nsn->part-of-project?]
   (fn [nsn color]
-    (merge (nsn->style-map nsn->part-of-project?
-                           nsn)
+    (merge (-> nsn
+               nsn->part-of-project?
+               part-of-project?->style-map)
            {:label (nsn->last-piece nsn)
             :color color
             :fontcolor color})))
@@ -173,8 +174,9 @@
     (dot/graph->dot nsns-to-show
                     nsn->dependees
                     :node->descriptor #(nsn->descriptor-fun % :black)
-                    :edge->descriptor #(nsn->style-map nsn->part-of-project?
-                                                       %2)
+                    :edge->descriptor #(-> %2
+                                           nsn->part-of-project?
+                                           part-of-project?->style-map)
                     :options {:dpi 300}
                     :cluster->show-as-node? #(or (nsn->has-dependees? %)
                                                  (nsn->has-dependers? %))
