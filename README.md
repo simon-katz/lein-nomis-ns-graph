@@ -3,6 +3,10 @@
 A Leiningen plugin that shows a Clojure project's namespace dependencies
 as a graph, and also shows the namespace hierarchy.
 
+**This documentation tracks the `master` branch. Consult
+the relevant Git tag (e.g. `0.12.0`) if you need documentation for a
+specific release.**
+
 
 ## Examples
 
@@ -103,6 +107,13 @@ and no other strings would match:
 * a
 
 
+### Exclusions using a Regex
+
+To exclude namespaces using a regex:
+
+    lein nomis-ns-graph :exclusions-re "^my-prefix|\.my-full-section\.|my-any-section"
+
+
 ### Writing a .gv File
 
 To write a `.gv` file:
@@ -120,20 +131,6 @@ extension.
 
 The Graphviz dot file format is a text format, so this is useful when developing
 and debugging.
-
-## New Features
-
-The features documented in this section are not yet released.
-
-They may or may not be in the latest snapshot version.
-(You could check https://clojars.org/lein-nomis-ns-graph for the latest
-snapshot version.)
-
-### Exclusions using a Regex
-
-To exclude namespaces using a regex:
-
-    lein nomis-ns-graph :exclusions-re "^my-prefix|\.my-ns-section\.|my-any-section"
 
 
 #### Example
