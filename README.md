@@ -113,6 +113,16 @@ To exclude namespaces using a regex:
 
     lein nomis-ns-graph :exclusions-re "^my-prefix|\.my-full-section\.|my-any-section"
 
+#### Example
+
+For a namespace named `aaa.bbb.ccc`, the following regular expressions would all
+match:
+
+* \^a
+* \\.bbb\\.
+* b
+
+
 
 ### Writing a .gv File
 
@@ -131,16 +141,6 @@ extension.
 
 The Graphviz dot file format is a text format, so this is useful when developing
 and debugging.
-
-
-#### Example
-
-For a namespace named `aaa.bbb.ccc`, the following regular expressions would all
-match:
-
-* \^a
-* \\.bbb\\.
-* b
 
 
 ## Acknowledgments
