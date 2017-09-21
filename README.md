@@ -78,7 +78,7 @@ To show one level of dependencies going to namespaces outside of your project:
 
     lein nomis-ns-graph :show-non-project-deps
 
-### Exclusions using a Prefix
+### Exclusions Using a Prefix
 
 To exclude namespaces using a prefix:
 
@@ -107,7 +107,7 @@ and no other strings would match:
 * a
 
 
-### Exclusions using a Regex
+### Exclusions Using a Regex
 
 To exclude namespaces using a regex:
 
