@@ -25,7 +25,8 @@ Current version:
 
 [![Clojars Project](https://img.shields.io/clojars/v/lein-nomis-ns-graph.svg)](https://clojars.org/lein-nomis-ns-graph)
 
-Add `[lein-nomis-ns-graph "0.13.0"]` (or the version above, if later) to the
+You probably want this plugin to be available to multiple projects, so add
+the above coordinates to the
 `:plugins` vector of your `:user` profile.
 
 ## Usage
