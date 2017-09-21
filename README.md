@@ -67,8 +67,8 @@ for your project):
 
     lein nomis-ns-graph :source-paths "a/b c/d e/f"
 
-The separator for the source paths can be a vertical bar (|). I found I
-needed this when using Git Bash on Windows -- space didn't work. (Strange.)
+The separator for the source paths can be either a space or a vertical bar (|).
+(I found spaces didn't work when using Git Bash on Windows. Strange.)
 
 The defaults are the `:source-paths` in the project definition.
 
@@ -86,8 +86,8 @@ To exclude namespaces using a prefix:
 
 Namespaces are not shown if they start with any of the supplied strings.
 
-As for source paths, the separator for the source paths can be a vertical bar
-(|).
+As for source paths, the separator for the source paths can be
+either a space or a vertical bar (|).
 
 #### Example
 
