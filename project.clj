@@ -10,4 +10,6 @@
   :repl-options {:init-ns user}
   :profiles {:dev {:dependencies [[midje "1.7.0"]]
                    :source-paths ["dev"]
-                   :plugins [[lein-midje "3.1.3"]]}})
+                   :plugins [[lein-midje "3.1.3"]]}}
+  :deploy-repositories [["snapshots" :clojars]
+                        ["releases" :clojars]])
