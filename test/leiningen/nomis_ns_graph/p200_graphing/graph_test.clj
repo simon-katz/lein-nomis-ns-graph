@@ -126,3 +126,36 @@
     :exclusions-re         "u.er|\\.sys"
     :project-group         "nomisdraw"
     :project-name          "nomisdraw"}))
+
+(fact "clj-with-inclusions-and-inclusions-re"
+  (check-graphing
+   "nomis-ns-graph-clj-with-inclusions-and-inclusions-re"
+   {:platform              :clj
+    :source-paths          ["test-resources/example-projects/nomisdraw/dev"
+                            "test-resources/example-projects/nomisdraw/src/clj"]
+    :inclusions            ["user" "nomisdraw.services.provided.web.server"]
+    :inclusions-re         "u.er|\\.sys"
+    :project-group         "nomisdraw"
+    :project-name          "nomisdraw"}))
+
+(fact "clj-with-exclusions-and-exclusions-re"
+  (check-graphing
+   "nomis-ns-graph-clj-with-exclusions-and-exclusions-re"
+   {:platform              :clj
+    :source-paths          ["test-resources/example-projects/nomisdraw/dev"
+                            "test-resources/example-projects/nomisdraw/src/clj"]
+    :exclusions            ["user"]
+    :exclusions-re         "\\.sys"
+    :project-group         "nomisdraw"
+    :project-name          "nomisdraw"}))
+
+(fact "clj-with-inclusions-re-and-exclusions-re"
+  (check-graphing
+   "nomis-ns-graph-clj-with-inclusions-re-and-exclusions-re"
+   {:platform              :clj
+    :source-paths          ["test-resources/example-projects/nomisdraw/dev"
+                            "test-resources/example-projects/nomisdraw/src/clj"]
+    :inclusions-re         "\\.services\\."
+    :exclusions-re         "\\.handlers\\."
+    :project-group         "nomisdraw"
+    :project-name          "nomisdraw"}))
