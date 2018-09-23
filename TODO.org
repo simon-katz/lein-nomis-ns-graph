@@ -1,3 +1,6 @@
+* TODO Add tests and doc for inclusions
+* TODO Bug: When the same arg is specified multiple times on the command line, one is used and the others are ignored
+** Disallow duplicates
 * TODO Change `check-graphing` tests to mostly not have exclusions
 * TODO Maybe, in `options-for-printing->options`, change `:exclusions-re`
 ** to `:exclusions-re-string`

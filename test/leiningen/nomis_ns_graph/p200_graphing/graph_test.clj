@@ -66,6 +66,17 @@
     :project-group         "nomisdraw"
     :project-name          "nomisdraw"}))
 
+(fact "clj-with-inclusions-and-externals"
+  (check-graphing
+   "nomis-ns-graph-clj-with-inclusions-and-externals"
+   {:platform              :clj
+    :source-paths          ["test-resources/example-projects/nomisdraw/dev"
+                            "test-resources/example-projects/nomisdraw/src/clj"]
+    :inclusions            ["user" "midje"]
+    :show-non-project-deps true
+    :project-group         "nomisdraw"
+    :project-name          "nomisdraw"}))
+
 (fact "clj-with-exclusions-and-externals"
   (check-graphing
    "nomis-ns-graph-clj-with-exclusions-and-externals"
@@ -93,6 +104,16 @@
     :source-paths          ["test-resources/example-projects/nomisdraw/src/cljs"
                             "test-resources/example-projects/nomisdraw/cljs/src"]
     :show-non-project-deps true
+    :project-group         "nomisdraw"
+    :project-name          "nomisdraw"}))
+
+(fact "clj-with-inclusions-re"
+  (check-graphing
+   "nomis-ns-graph-clj-with-inclusions-re"
+   {:platform              :clj
+    :source-paths          ["test-resources/example-projects/nomisdraw/dev"
+                            "test-resources/example-projects/nomisdraw/src/clj"]
+    :inclusions-re         "u.er|\\.sys"
     :project-group         "nomisdraw"
     :project-name          "nomisdraw"}))
 

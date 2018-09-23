@@ -79,18 +79,24 @@ To show one level of dependencies going to namespaces outside of your project:
 
     lein nomis-ns-graph :show-non-project-deps
 
-### Exclusions Using a Prefix
+### Inclusions and Exclusions Using a Prefix
+
+In the following, as for source paths, the separator can be
+either a space or a vertical bar (|).
+
+#### Inclusions
+
+To include namespaces using a prefix:
+
+    lein nomis-ns-graph :inclusions "user timbre"
+
+#### Exclusions
 
 To exclude namespaces using a prefix:
 
     lein nomis-ns-graph :exclusions "user timbre"
 
-Namespaces are not shown if they start with any of the supplied strings.
-
-As for source paths, the separator for the source paths can be
-either a space or a vertical bar (|).
-
-#### Example
+#### Example of Matching
 
 For a namespace named `aaa.bbb.ccc`, the following strings would all match
 and no other strings would match:
@@ -108,13 +114,21 @@ and no other strings would match:
 * a
 
 
-### Exclusions Using a Regex
+### Inclusions and Exclusions Using a Regex
+
+#### Inclusions
+
+To include namespaces using a regex:
+
+    lein nomis-ns-graph :inclusions-re "^my-prefix|\.my-full-section\.|my-any-section"
+
+#### Exclusions
 
 To exclude namespaces using a regex:
 
     lein nomis-ns-graph :exclusions-re "^my-prefix|\.my-full-section\.|my-any-section"
 
-#### Example
+#### Example of Matching
 
 For a namespace named `aaa.bbb.ccc`, the following regular expressions would all
 match:

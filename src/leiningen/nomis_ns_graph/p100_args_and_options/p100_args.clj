@@ -12,6 +12,8 @@
     :platform
     :source-paths
     :show-non-project-deps
+    :inclusions
+    :inclusions-re
     :exclusions
     :exclusions-re
     :write-gv-file?})
@@ -54,6 +56,8 @@
          platform-raw              :platform
          source-paths-raw          :source-paths
          show-non-project-deps-raw :show-non-project-deps
+         inclusions-raw            :inclusions
+         inclusions-re-raw         :inclusions-re
          exclusions-raw            :exclusions
          exclusions-re-raw         :exclusions-re
          write-gv-file?-raw        :write-gv-file?} raw-options]
@@ -69,6 +73,13 @@
                                                  #" |\|")
                                       nil)
              :show-non-project-deps (boolean-ify show-non-project-deps-raw)
+             :inclusions            (if inclusions-raw
+                                      (str/split inclusions-raw
+                                                 #" |\|")
+                                      nil)
+             :inclusions-re         (if inclusions-re-raw
+                                      inclusions-re-raw
+                                      nil)
              :exclusions            (if exclusions-raw
                                       (str/split exclusions-raw
                                                  #" |\|")

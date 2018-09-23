@@ -94,37 +94,71 @@
                    n)]
             [n p])))
 
-(defn ^:private nsn-excluded-by-user? [exclusions
-                                       exclusions-re
-                                       nsn]
-  (or (some #(str/starts-with? nsn %)
-            exclusions)
-      (when exclusions-re
-        (re-find (re-pattern exclusions-re)
-                 (name nsn)))))
+(defn ^:private nsn-permitted-by-user? [inclusions
+                                        inclusions-re
+                                        exclusions
+                                        exclusions-re
+                                        nsn]
+  (let [inclusions-specified?    (seq inclusions)
+        inclusions-re-specified? inclusions-re
+        exclusions-specified?    (seq exclusions)
+        exclusions-re-specified? exclusions-re]
+    (letfn [(inclusions-ok-or-not-specified? []
+              (or (not inclusions-specified?)
+                  (some #(str/starts-with? nsn %) inclusions)))
+            (inclusions-re-ok-or-not-specified? []
+              (or (not inclusions-re-specified?)
+                  (re-find (re-pattern inclusions-re) (name nsn))))
+            (exclusions-ok-or-not-specified? []
+              (or (not exclusions-specified?)
+                  (not-any? #(str/starts-with? nsn %) exclusions)))
+            (exclusions-re-ok-or-not-specified? []
+              (or (not exclusions-re-specified?)
+                  (not (re-find (re-pattern exclusions-re) (name nsn)))))]
+      (and (exclusions-ok-or-not-specified?)
+           (exclusions-re-ok-or-not-specified?)
+           (cond (and inclusions-specified?
+                      inclusions-re-specified?)
+                 (or (inclusions-ok-or-not-specified?)
+                     (inclusions-re-ok-or-not-specified?))
+                 ;;
+                 inclusions-specified?
+                 (inclusions-ok-or-not-specified?)
+                 ;;
+                 inclusions-re-specified?
+                 (inclusions-re-ok-or-not-specified?)
+                 ;;
+                 :else
+                 true)))))
 
-(defn ^:private make-incorporate-nsn?-fun
-  ;; "incorporate" rather than "include" because that makes for easy
+(defn ^:private make-permit-nsn?-fun
+  ;; "permit" rather than "include" because that makes for easy
   ;; grepping of:
   ;; - incl -- include / including / inclusion
   ;; - excl -- exclude / excluding / inclusion
-  ;; - incorporate (meaning include and not exclude)
+  ;; - permit (meaning include and not exclude)
   [nsn->part-of-project?
+   inclusions
+   inclusions-re
    exclusions
    exclusions-re
    show-non-project-deps]
   (fn [nsn]
     (and (or (nsn->part-of-project? nsn)
              show-non-project-deps)
-         (not (nsn-excluded-by-user? exclusions
-                                     exclusions-re
-                                     nsn)))))
+         (nsn-permitted-by-user? inclusions
+                                 inclusions-re
+                                 exclusions
+                                 exclusions-re
+                                 nsn))))
 
 ;;;; ___________________________________________________________________________
 ;;;; Make dot data
 
 (defn ^:private ns-graph-spec->title-dot-data [{:keys [platform
                                                        source-paths
+                                                       inclusions
+                                                       inclusions-re
                                                        exclusions
                                                        exclusions-re
                                                        show-non-project-deps
@@ -149,6 +183,14 @@
                                                         "")))))))
        (when show-non-project-deps
          "\\l:show-non-project-deps true")
+       (when-not (nil? inclusions-re)
+         (str "\\l:inclusions-re: " inclusions-re))
+       (when-not (empty? inclusions)
+         (str "\\l:inclusions:\\l"
+              (apply str
+                     (str/join "\\l"
+                               (map (partial str "    ")
+                                    inclusions)))))
        (when-not (nil? exclusions-re)
          (str "\\l:exclusions-re: " exclusions-re))
        (when-not (empty? exclusions)
@@ -205,6 +247,8 @@
 
 (defn ns-graph-spec->dot-data [{:keys [platform
                                        source-paths
+                                       inclusions
+                                       inclusions-re
                                        exclusions
                                        exclusions-re
                                        show-non-project-deps
@@ -218,15 +262,17 @@
                                    source-files->nsns
                                    nsns->all-nsns)
         nsn->part-of-project?  (partial contains? nsns-with-parents)
-        incorporate-nsn?-fun   (make-incorporate-nsn?-fun nsn->part-of-project?
-                                                          exclusions
-                                                          exclusions-re
-                                                          show-non-project-deps)
-        leaf-nsns              (filter incorporate-nsn?-fun
+        permit-nsn?-fun        (make-permit-nsn?-fun nsn->part-of-project?
+                                                     inclusions
+                                                     inclusions-re
+                                                     exclusions
+                                                     exclusions-re
+                                                     show-non-project-deps)
+        leaf-nsns              (filter permit-nsn?-fun
                                        (ctns-dep/nodes dep-graph))
         nsns                   (nsns->all-nsns leaf-nsns)
         nsn->self-and-children (leaf-nsns->nsn->self-and-children leaf-nsns)
-        nsn->dependees         #(filter incorporate-nsn?-fun
+        nsn->dependees         #(filter permit-nsn?-fun
                                         (ctns-dep/immediate-dependencies
                                          dep-graph
                                          %))

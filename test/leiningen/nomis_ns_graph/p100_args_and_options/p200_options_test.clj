@@ -10,6 +10,8 @@
 
 (def options-for-augmentation
   {:show-non-project-deps "the-show-non-project-deps"
+   :inclusions            "the-inclusions"
+   :inclusions-re         "the-inclusions-re"
    :exclusions            "the-exclusions"
    :exclusions-re         "the-exclusions-re"
    :filename              "the-filename"
@@ -23,6 +25,8 @@
   =>
   {:ns-graph-spec {:platform              :clj
                    :source-paths          ["the" "project" "source" "paths"]
+                   :inclusions            "the-inclusions"
+                   :inclusions-re         "the-inclusions-re"
                    :exclusions            "the-exclusions"
                    :exclusions-re         "the-exclusions-re"
                    :show-non-project-deps "the-show-non-project-deps"
@@ -43,6 +47,8 @@
   =>
   {:ns-graph-spec {:platform              :clj
                    :source-paths          ["the" "specs" "source" "paths"]
+                   :inclusions            "the-inclusions"
+                   :inclusions-re         "the-inclusions-re"
                    :exclusions            "the-exclusions"
                    :exclusions-re         "the-exclusions-re"
                    :show-non-project-deps "the-show-non-project-deps"
@@ -59,6 +65,8 @@
   =>
   {:ns-graph-spec {:platform              :cljs
                    :source-paths          ["src/cljs" "cljs/src"]
+                   :inclusions            "the-inclusions"
+                   :inclusions-re         "the-inclusions-re"
                    :exclusions            "the-exclusions"
                    :exclusions-re         "the-exclusions-re"
                    :show-non-project-deps "the-show-non-project-deps"
@@ -79,6 +87,8 @@
   =>
   {:ns-graph-spec {:platform              :cljs
                    :source-paths          ["the" "specs" "source" "paths"]
+                   :inclusions            "the-inclusions"
+                   :inclusions-re         "the-inclusions-re"
                    :exclusions            "the-exclusions"
                    :exclusions-re         "the-exclusions-re"
                    :show-non-project-deps "the-show-non-project-deps"

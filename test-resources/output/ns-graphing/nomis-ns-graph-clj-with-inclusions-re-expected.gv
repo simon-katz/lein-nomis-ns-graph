@@ -1,0 +1,32 @@
+digraph {
+graph[dpi=300, rankdir=TP]
+node[fontname="Monospace"]
+edge[fontname="Monospace"]
+
+node2[style=solid, label="user", color=black, fontcolor=black]
+labeljust=left
+subgraph cluster4 {
+graph[dpi=100, style=solid, label="nomisdraw", color=blue, fontcolor=blue, fontname="Monospace", rankdir=TP]
+node[fontname="Monospace"]
+edge[fontname="Monospace"]
+
+labeljust=left
+subgraph cluster6 {
+graph[dpi=100, style=solid, label="system", color=blue, fontcolor=blue, fontname="Monospace", rankdir=TP]
+node[fontname="Monospace"]
+edge[fontname="Monospace"]
+
+node8[style=solid, label="system", color=black, fontcolor=black]
+node10[style=solid, label="main", color=black, fontcolor=black]
+labeljust=left
+}
+
+}
+
+node2 -> node8[style=solid, label=""]
+node2 -> node10[style=solid, label=""]
+node10 -> node8[style=solid, label=""]
+label="nomisdraw/nomisdraw namespace dependencies\l:platform: clj\l:source-paths: test-resources/example-projects/nomisdraw/dev test-resources/example-projects/nomisdraw/src/clj\l:inclusions-re: u.er|\.sys\l"
+labelloc=top
+fontsize=16.0
+}

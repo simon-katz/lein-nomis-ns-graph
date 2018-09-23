@@ -66,6 +66,38 @@
     {:filename "nomis-ns-graph"
      :platform :clj})
 
+  (fact "inclusions a"
+    (ltu/with-ignore-logging []
+      (make-command-line-options [":inclusions" "a"]))
+    =>
+    {:filename "nomis-ns-graph"
+     :platform :clj
+     :inclusions ["a"]})
+
+  (fact "inclusions a b"
+    (ltu/with-ignore-logging []
+      (make-command-line-options [":inclusions" "a b"]))
+    =>
+    {:filename "nomis-ns-graph"
+     :platform :clj
+     :inclusions ["a" "b"]})
+
+  (fact "inclusions a|b"
+    (ltu/with-ignore-logging []
+      (make-command-line-options [":inclusions" "a|b"]))
+    =>
+    {:filename "nomis-ns-graph"
+     :platform :clj
+     :inclusions ["a" "b"]})
+
+  (fact "inclusions-re a|b"
+    (ltu/with-ignore-logging []
+      (make-command-line-options [":inclusions-re" "a|b"]))
+    =>
+    {:filename "nomis-ns-graph"
+     :platform :clj
+     :inclusions-re "a|b"})
+
   (fact "exclusions a"
     (ltu/with-ignore-logging []
       (make-command-line-options [":exclusions" "a"]))
