@@ -103,10 +103,16 @@
         (re-find (re-pattern exclusions-re)
                  (name nsn)))))
 
-(defn ^:private make-include-nsn?-fun [nsn->part-of-project?
-                                       exclusions
-                                       exclusions-re
-                                       show-non-project-deps]
+(defn ^:private make-incorporate-nsn?-fun
+  ;; "incorporate" rather than "include" because that makes for easy
+  ;; grepping of:
+  ;; - incl -- include / including / inclusion
+  ;; - excl -- exclude / excluding / inclusion
+  ;; - incorporate (meaning include and not exclude)
+  [nsn->part-of-project?
+   exclusions
+   exclusions-re
+   show-non-project-deps]
   (fn [nsn]
     (and (or (nsn->part-of-project? nsn)
              show-non-project-deps)
@@ -141,7 +147,7 @@
                                (map #(str/replace-first %
                                                         root-path
                                                         "")))))))
-       (when show-non-project-deps 
+       (when show-non-project-deps
          "\\l:show-non-project-deps true")
        (when-not (nil? exclusions-re)
          (str "\\l:exclusions-re: " exclusions-re))
@@ -210,17 +216,17 @@
         dep-graph              (source-files->dep-graph source-files)
         nsns-with-parents      (-> source-files
                                    source-files->nsns
-                                   nsns->all-nsns) 
+                                   nsns->all-nsns)
         nsn->part-of-project?  (partial contains? nsns-with-parents)
-        include-nsn?-fun       (make-include-nsn?-fun nsn->part-of-project?
-                                                      exclusions
-                                                      exclusions-re
-                                                      show-non-project-deps)
-        leaf-nsns              (filter include-nsn?-fun
+        incorporate-nsn?-fun   (make-incorporate-nsn?-fun nsn->part-of-project?
+                                                          exclusions
+                                                          exclusions-re
+                                                          show-non-project-deps)
+        leaf-nsns              (filter incorporate-nsn?-fun
                                        (ctns-dep/nodes dep-graph))
         nsns                   (nsns->all-nsns leaf-nsns)
         nsn->self-and-children (leaf-nsns->nsn->self-and-children leaf-nsns)
-        nsn->dependees         #(filter include-nsn?-fun
+        nsn->dependees         #(filter incorporate-nsn?-fun
                                         (ctns-dep/immediate-dependencies
                                          dep-graph
                                          %))
