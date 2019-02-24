@@ -158,6 +158,31 @@ The Graphviz dot file format is a text format, so this is useful when developing
 and debugging.
 
 
+## Troubleshooting
+
+#### `No such var: ctns-find/cljs`
+
+    Syntax error compiling at (leiningen/nomis_ns_graph/p200_graphing/graph.clj:68:27).
+            ...
+    Caused by: java.lang.RuntimeException: No such var: ctns-find/cljs
+
+`nomis-ns-graph` uses features of `org.clojure/tools.namespace` add in v3.0.0.
+If there are other plugins including tools.namespace prior 3.0.0, the required
+symbols are not available causing issues in this plugin.
+
+There are two workarounds for it:
+
+  1. change the order of plugins
+
+         :plugins [[lein-nomis-ns-graph "0.14.2"]
+                   [lein-kibit "0.1.6"]]
+
+  2. exclude tools.namespace from conflicting plugin
+
+         :plugins [[lein-kibit "0.1.6" :exclusions [org.clojure/tools.namespace]]
+                   [lein-nomis-ns-graph "0.14.2"]]
+
+
 ## Acknowledgments
 
 Inspired by the following:
