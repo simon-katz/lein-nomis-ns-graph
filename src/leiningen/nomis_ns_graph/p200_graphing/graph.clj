@@ -79,8 +79,10 @@
     (tracker ::ctns-track/deps)))
 
 (defn ^:private source-files->nsns [source-files]
-  (set (map (comp second ctns-file/read-file-ns-decl)
-            source-files)))
+  (->> (map (comp second ctns-file/read-file-ns-decl)
+            source-files)
+       (remove nil?)
+       set))
 
 (defn  ^:private leaf-nsns->nsn->self-and-children [leaf-nsns]
   (reduce (fn [sofar [n p]]
