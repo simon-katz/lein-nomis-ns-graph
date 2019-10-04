@@ -5,10 +5,10 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :eval-in-leiningen true
   :dependencies [[nomis-rhizome "0.3.0"]
-                 [org.clojure/tools.namespace "0.3.0-alpha4"]
+                 [org.clojure/tools.namespace "0.3.1"]
                  [slingshot "0.12.2"]]
   :repl-options {:init-ns user}
-  :profiles {:dev {:dependencies [[midje "1.7.0"]]
+  :profiles {:dev {:dependencies [[midje "1.9.9"]]
                    :source-paths ["dev"]
                    :plugins [[lein-midje "3.1.3"]]}}
   :deploy-repositories [["snapshots" :clojars]
