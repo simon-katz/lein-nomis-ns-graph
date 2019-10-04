@@ -199,6 +199,6 @@ The plugin itself is small; all the hard work is done by
 
 Portions copyright © 2013 Hilverd Reker
 
-Copyright © 2017-2018 Simon Katz
+Copyright © 2017-2019 Simon Katz
 
 Distributed under the Eclipse Public License, the same as Clojure.
