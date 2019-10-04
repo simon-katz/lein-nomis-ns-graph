@@ -5,14 +5,13 @@
 ;;;; ___________________________________________________________________________
 ;;;; ---- with-ignore-logging ----
 
-(defn with-ignore-logging* [fun]
-  ;; Clojure symbols and namespaces are broken (IMHO).
+(defn -with-ignore-logging* [fun]
   ;; This has to be public, otherwise uses of `with-ignore-logging` fail.
   (binding [lcm/*info* false]
     (fun)))
 
 (defmacro with-ignore-logging [[] & body]
-  `(with-ignore-logging* (fn [] ~@body)))
+  `(-with-ignore-logging* (fn [] ~@body)))
 
 ;;;; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
