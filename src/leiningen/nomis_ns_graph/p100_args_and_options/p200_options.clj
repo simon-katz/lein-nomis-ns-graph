@@ -13,15 +13,7 @@
     command-line-options
     (assoc command-line-options
            :source-paths
-           (case (:platform command-line-options)
-             :clj (-> project
-                      :source-paths)
-             :cljs (let [assumed-cljs-source-paths ["src/cljs"
-                                                    "cljs/src"]]
-                     (lcm/info "Assuming cljs source paths ="
-                               assumed-cljs-source-paths
-                               "(you can override this with the :source-paths option).")
-                     assumed-cljs-source-paths)))))
+           (:source-paths project))))
 
 (defn project-&-command-line-options->specs [project
                                              command-line-options]

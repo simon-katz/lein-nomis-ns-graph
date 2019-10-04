@@ -64,7 +64,7 @@
                                                   :platform :cljs)))
   =>
   {:ns-graph-spec {:platform              :cljs
-                   :source-paths          ["src/cljs" "cljs/src"]
+                   :source-paths          ["the" "project" "source" "paths"]
                    :inclusions            "the-inclusions"
                    :inclusions-re         "the-inclusions-re"
                    :exclusions            "the-exclusions"

@@ -54,8 +54,7 @@ This will produce a file named `foo.png` instead of the default
 
 ### ClojureScript
 
-To show dependencies between ClojureScript namespaces (assuming ClojureScript
-source is in either `src/cljs` or `cljs/src`):
+To show dependencies between ClojureScript namespaces:
 
     lein nomis-ns-graph :platform cljs
 
@@ -63,8 +62,7 @@ The default is `:platform clj`.
 
 ### Source Paths
 
-To specify source paths (useful if the defaults for ClojureScript are wrong
-for your project):
+To specify source paths:
 
     lein nomis-ns-graph :source-paths "a/b c/d e/f"
 
