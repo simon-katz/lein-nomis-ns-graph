@@ -5,7 +5,7 @@
             [clojure.tools.namespace.dependency :as ctns-dep]
             [clojure.tools.namespace.file :as ctns-file]
             [clojure.tools.namespace.find :as ctns-find]
-            ;; [clojure.tools.namespace.parse :as ctns-parse]
+            [clojure.tools.namespace.parse :as ctns-parse]
             [clojure.tools.namespace.track :as ctns-track]
             [leiningen.core.main :as lcm]
             [leiningen.nomis-ns-graph.utils.utils :as u]
@@ -74,9 +74,15 @@
                       io/file)
                 source-paths))))
 
-(defn ^:private source-files->dep-graph [source-files]
-  (let [tracker (ctns-file/add-files {} source-files)]
-    (tracker ::ctns-track/deps)))
+(defn ^:private source-files->dep-graph [platform
+                                         source-files]
+  (let [read-opts (case platform
+                    :clj  ctns-parse/clj-read-opts
+                    :cljs ctns-parse/cljs-read-opts)]
+    (let [tracker (ctns-file/add-files {}
+                                       source-files
+                                       read-opts)]
+      (tracker ::ctns-track/deps))))
 
 (defn ^:private source-files->nsns [source-files]
   (->> (map (comp second ctns-file/read-file-ns-decl)
@@ -259,7 +265,8 @@
                                 :as ns-graph-spec}]
   (let [source-files           (compute-source-files platform
                                                      source-paths)
-        dep-graph              (source-files->dep-graph source-files)
+        dep-graph              (source-files->dep-graph platform
+                                                        source-files)
         nsns-with-parents      (-> source-files
                                    source-files->nsns
                                    nsns->all-nsns)
