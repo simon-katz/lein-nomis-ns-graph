@@ -4,7 +4,7 @@
 * TODO Maybe, in `options-for-printing->options`, change `:exclusions-re`
 ** to `:exclusions-re-string`
 * TODO New function: `spit-if-new-content`
-  [[file:~/development-100/repositories/nomis/apps-and-libs/lein-nomis-ns-graph/test/leiningen/nomis_ns_graph/p200_graphing/graph_test.clj::(defn%20check-graphing%20%5Bfilename][file:~/development-100/repositories/nomis/apps-and-libs/lein-nomis-ns-graph/test/leiningen/nomis_ns_graph/p200_graphing/graph_test.clj::(defn check-graphing [filename]]
+  [[file:~/development-100/repositories/nomis/dev/apps-and-libs/lein-nomis-ns-graph/test/leiningen/nomis_ns_graph/p200_graphing/graph_test.clj::(defn%20check-graphing%20%5Bfilename][file:~/development-100/repositories/nomis/dev/apps-and-libs/lein-nomis-ns-graph/test/leiningen/nomis_ns_graph/p200_graphing/graph_test.clj::(defn check-graphing [filename]]
 * DONE Option to print the dot stuff
 ** This means using the `rhizome.dot` ns
 * DONE Tests for the generated dot stuff
